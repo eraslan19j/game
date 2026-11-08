@@ -5,7 +5,7 @@ shader_type spatial;
 render_mode shadows_disabled;
 
 uniform vec4 shallow_color : source_color = vec4(0.30, 0.78, 0.78, 1.0);
-uniform vec4 deep_color : source_color = vec4(0.05, 0.31, 0.50, 1.0);
+uniform vec4 deep_color : source_color = vec4(0.09, 0.36, 0.52, 1.0);
 uniform vec4 foam_color : source_color = vec4(0.92, 0.99, 0.99, 1.0);
 uniform vec4 shore_color : source_color = vec4(0.72, 0.93, 0.90, 1.0);
 uniform float wave_speed = 1.0;
@@ -62,9 +62,6 @@ void fragment() {
 	// Kiyida daha saydam, acik denizde neredeyse opak.
 	// Sadece adanin uzerinde saydam (arazi gorunur). Ada disinda TAM opak:
 	// boylece arazinin 200x200 m kare tabani suyun altindan gorunmez.
-	float alpha = 1.0;
-	if (island_dist < 80.0) {
-		alpha = smoothstep(64.0, 80.0, island_dist);
-	}
+	float alpha = smoothstep(70.0, 86.0, island_dist);
 	ALPHA = clamp(alpha, 0.0, 1.0);
 }

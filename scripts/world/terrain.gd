@@ -215,8 +215,8 @@ func _build_height_texture(heights: PackedFloat32Array, n: int) -> void:
 func _color_for(h: float, normal_y: float) -> Color:
 	# Su altindaki zemin de SU RENGINE boyanir: yari saydam suyun altindan
 	# parlak kum gorunup "gri kare" gibi durmasini engeller.
-	var seabed := Color(0.05, 0.30, 0.50)
-	var seabed_shallow := Color(0.22, 0.55, 0.60)
+	var seabed := Color(0.09, 0.36, 0.52)
+	var seabed_shallow := Color(0.20, 0.56, 0.62)
 	var sand := Color(0.87, 0.78, 0.55)
 	var grass_low := Color(0.31, 0.58, 0.24)
 	var grass_high := Color(0.52, 0.72, 0.29)
