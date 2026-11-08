@@ -4,8 +4,8 @@ shader_type spatial;
 // arasindaki mesafe artar. Doku okumaya bagimli degil (guvenli).
 render_mode shadows_disabled, fog_disabled;
 
-uniform vec4 shallow_color : source_color = vec4(0.30, 0.78, 0.78, 1.0);
-uniform vec4 deep_color : source_color = vec4(0.09, 0.36, 0.52, 1.0);
+uniform vec4 shallow_color : source_color = vec4(0.17, 0.55, 0.68, 1.0);
+uniform vec4 deep_color : source_color = vec4(0.07, 0.30, 0.50, 1.0);
 uniform vec4 foam_color : source_color = vec4(0.92, 0.99, 0.99, 1.0);
 uniform vec4 shore_color : source_color = vec4(0.72, 0.93, 0.90, 1.0);
 uniform float wave_speed = 1.0;
@@ -48,11 +48,11 @@ void fragment() {
 	// boylece kamera donerken deniz rengi degismez (eskiden asiri parlak
 	// halkalar olusuyordu).
 	float island_dist = length(world_pos.xz);
-	vec3 col = mix(shallow_color.rgb, deep_color.rgb, smoothstep(76.0, 165.0, island_dist));
+	vec3 col = mix(shallow_color.rgb, deep_color.rgb, smoothstep(74.0, 120.0, island_dist));
 
 	// Kiyi hattinda ince kopuk cizgisi.
-	float foam = 1.0 - smoothstep(72.0, 80.0, island_dist);
-	col = mix(col, foam_color.rgb, foam * 0.5);
+	float foam = 1.0 - smoothstep(71.0, 78.0, island_dist);
+	col = mix(col, foam_color.rgb, foam * 0.45);
 
 	ALBEDO = col;
 	ROUGHNESS = 0.55;
