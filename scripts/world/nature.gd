@@ -41,10 +41,10 @@ const BUSH_COLORS := [
 	Color(0.14, 0.36, 0.20),
 ]
 const FLOWER_COLORS := [
-	Color(0.98, 0.55, 0.62),  # pembe
-	Color(0.99, 0.86, 0.40),  # sari
+	Color(0.98, 0.55, 0.62),  # pembe (en yaygin)
+	Color(0.99, 0.82, 0.34),  # sari
 	Color(0.72, 0.58, 0.95),  # mor
-	Color(0.99, 0.97, 0.94),  # beyaz
+	Color(0.99, 0.93, 0.80),  # krem
 	Color(0.98, 0.62, 0.32),  # turuncu
 ]
 const ROCK_COLORS := [
@@ -168,7 +168,7 @@ func _build_trees(count: int) -> void:
 		var style: int = _weighted_pick(styles, weights)
 		per_style[style].append({
 			"pos": spot,
-			"scale": _rng.randf_range(0.75, 1.55) * (1.25 if style == Meshes.STYLE_PALM else 1.0),
+			"scale": _rng.randf_range(1.0, 1.9) * (1.2 if style == Meshes.STYLE_PALM else 1.0),
 			"rot": _rng.randf_range(0.0, TAU),
 			"color": TREE_LEAF_COLORS[_rng.randi() % TREE_LEAF_COLORS.size()],
 		})
@@ -195,7 +195,7 @@ func _build_bushes(count: int) -> void:
 			continue
 		items.append({
 			"pos": spot,
-			"scale": _rng.randf_range(0.7, 1.5),
+			"scale": _rng.randf_range(0.9, 1.8),
 			"rot": _rng.randf_range(0.0, TAU),
 			"color": BUSH_COLORS[_rng.randi() % BUSH_COLORS.size()],
 		})
@@ -259,7 +259,7 @@ func _build_grass(count: int) -> void:
 			continue
 		items.append({
 			"pos": spot,
-			"scale": _rng.randf_range(0.7, 1.5),
+			"scale": _rng.randf_range(0.9, 1.8),
 			"rot": _rng.randf_range(0.0, TAU),
 			"color": Color(1, 1, 1).lerp(TREE_LEAF_COLORS[_rng.randi() % TREE_LEAF_COLORS.size()], 0.35),
 		})
@@ -284,14 +284,14 @@ func _build_sand() -> void:
 		if items.size() >= sand_patch_count:
 			break
 		# Deniz seviyesine yakin, hafif egimli kiyi seridi.
-		var spot = _pick(-0.2, 1.4, 0.40, 0.99)
+		var spot = _pick(0.35, 1.5, 0.30, 0.99)
 		if spot == null:
 			continue
 		items.append({
 			"pos": spot + Vector3(0.0, 0.03, 0.0),
-			"scale": _rng.randf_range(2.0, 5.5),
+			"scale": _rng.randf_range(1.6, 3.6),
 			"rot": _rng.randf_range(0.0, TAU),
-			"color": SAND_COLOR.lerp(Color(1, 1, 1), _rng.randf_range(0.0, 0.25)),
+			"color": SAND_COLOR.lerp(Color(1, 1, 1), _rng.randf_range(0.0, 0.08)),
 		})
 	if items.is_empty():
 		return
