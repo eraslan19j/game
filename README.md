@@ -3,10 +3,23 @@
 Küçük ölçekli, **3D keşif ve fotoğraf çekme** macerası. Savaş yok.
 Sıcak, renkli bir görsel dil hedefliyor. Godot 4 (GDScript) ile geliştiriliyor, Android'e çıkar.
 
-> Durum: **Aşama 3 — Atmosfer.** Ada + stilize su + toon (boyalı) görünüm,
-> 10 dakikalık gün döngüsü (gün doğumu → öğle → gün batımı → gece), kodla üretilen bulutlar,
-> renkli sis, yumuşak gölgeler ve **Kalite (Düşük/Orta/Yüksek) ayar menüsü** (TR/EN).
+> Durum: **Aşama 4 — Doğal yaşam.** Adaya **220 ağaç (4 çeşit)**, 260 çalı, 170 kaya,
+> 900 çiçek, **16.000 tutam çimen** (MultiMesh + rüzgârda salınma) ve kıyıda kum yamaları eklendi.
+> Yerleşim tamamen **kodla ve yükseklik/eğim/kıyı kurallarına göre** üretiliyor (harici görsel yok).
 > Kamera otomatik dönüyor. Yürüme ve fotoğraf çekme sonraki adımlarda eklenecek.
+
+### ⚡ Performans (ölçüldü)
+| Ölçüm | Değer |
+|---|---|
+| Çizim çağrısı (draw call) | **12** |
+| Üçgen sayısı | **~360.000** |
+| Bitki başına çizim çağrısı | 1 (tüm ağaçlar/çimenler MultiMesh) |
+| CI (yazılım OpenGL, GPU yok) | ~9-15 FPS |
+| Hedef | **orta seviye telefonda 30+ FPS** |
+
+> Not: CI makinelerinde ekran kartı yok; ölçüm **yazılım renderer (llvmpipe)** ile yapılıyor,
+> bu yüzden oradaki FPS gerçek telefon performansını göstermez. Telefonda ölçmek için
+> **AYAR → Bilgi** bölümündeki FPS sayacına bak.
 
 ## 🎛️ Ayar menüsü
 
@@ -34,7 +47,8 @@ game/
 ├─ shaders/
 │  ├─ water.gdshader        ← Stilize su (dalga, saydamlık, kıyı rengi)
 │  ├─ toon.gdshader         ← Boyalı/çizgi film görünümü (bantlı ışık, renkli gölge)
-│  └─ clouds.gdshader       ← Kodla üretilen bulut kubbesi
+│  ├─ clouds.gdshader       ← Kodla üretilen bulut kubbesi
+│  └─ nature.gdshader       ← Bitkiler için toon + rüzgâr shader'ı
 ├─ scripts/
 │  └─ world/
 │     ├─ world.gd            ← Sahneyi canlandıran script (güneş, kamera, su bağlantısı)
@@ -43,6 +57,8 @@ game/
 │     ├─ sky_cycle.gd        ← 10 dakikalık gün döngüsü (renk/sis/güneş)
 │     ├─ quality_settings.gd ← Kalite presetleri (Autoload)
 │     ├─ cloud_texture.gd    ← Bulutlar için kodla üretilen doku
+│     ├─ nature.gd           ← Bitki/kaya/kum yerleşimi (yükseklik + eğim kuralı)
+│     ├─ nature_meshes.gd    ← Ağaç (4 çeşit), çalı, çiçek, kaya, çimen modelleri
 │     └─ perf_log.gd         ← FPS/çizim istatistiği
 ├─ scripts/ui/
 │  ├─ settings_menu.gd       ← Dokunmatik ayar menüsü
