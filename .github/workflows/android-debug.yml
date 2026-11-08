@@ -301,7 +301,7 @@ jobs:
       # Log indirme servisi bazi ortamlardan erisilemedigi icin, derleme
       # basarisiz olursa tanilama logunu bir dala yaziyoruz.
       - name: Tanilama logunu yaz
-        if: failure()
+        if: always()
         run: |
           set -x
           grep -vE "fontconfig|get_system_font_path" "${DIAG_LOG}" > /tmp/export_clean.log || true
