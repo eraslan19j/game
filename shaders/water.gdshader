@@ -59,9 +59,9 @@ void fragment() {
 	METALLIC = 0.0;
 	SPECULAR = 0.04;
 
-	// Kiyida daha saydam, acik denizde neredeyse opak.
-	// Sadece adanin uzerinde saydam (arazi gorunur). Ada disinda TAM opak:
-	// boylece arazinin 200x200 m kare tabani suyun altindan gorunmez.
-	float alpha = smoothstep(60.0, 76.0, island_dist);
-	ALPHA = clamp(alpha, 0.0, 1.0);
+	// Su HER YERDE opak. Boylece arazinin 200x200 m kare tabani suyun
+	// altindan gorunmez (goruntuyu bozan tek sey buydu). Ada suyun ustunde
+	// kaldigi icin kiyi hattinda dogal bir bulusma olur; kiyi rengi ve kopuk
+	// halkasi yukarida island_dist'e gore zaten uygulaniyor.
+	ALPHA = 1.0;
 }
