@@ -10,7 +10,6 @@ uniform vec4 rim_tint : source_color = vec4(1.0, 0.93, 0.78, 1.0);
 uniform float rim_strength = 0.22;
 uniform float roughness_value = 0.95;
 uniform float brightness = 1.0;
-// Arazi icin: ada disindaki (uzak + su alti) kisimlari kirp.
 
 void fragment() {
 	vec3 base = albedo.rgb;
@@ -19,7 +18,9 @@ void fragment() {
 	}
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
 	ALBEDO = (base + rim * rim_strength * rim_tint.rgb * 0.35) * brightness;
-	ALPHA = albedo.a;
+	// ONEMLI: ALPHA'ya deger YAZMIYORUZ. Yazilirsa materyal saydam hatta gecer,
+	// derinlik testi bozulur ve arazinin 200x200 m kare tabani suyun USTUNE
+	// cizilip goruntude kare olarak belirir. Arazi zaten tamamen opak.
 	ROUGHNESS = roughness_value;
 	METALLIC = 0.0;
 	SPECULAR = 0.0;
