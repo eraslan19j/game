@@ -218,7 +218,7 @@ func _color_for(h: float, normal_y: float) -> Color:
 	var rock := Color(0.63, 0.58, 0.53)
 
 	if h < sea_level - 1.5:
-		return deep_sand
+		return Color(1.0, 0.0, 1.0)  # DEBUG
 	if h < sea_level + 1.0:
 		return sand.lerp(deep_sand, 0.25)
 	if normal_y < 0.78:
