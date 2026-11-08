@@ -49,31 +49,33 @@ func _ready() -> void:
 
 ## Teshis: ekrandaki noktalara kamera isini gonder, ne gorunuyor logla.
 func _probe_screen() -> void:
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.8).timeout
 	var cam := get_viewport().get_camera_3d()
 	if cam == null:
 		print("[Probe] kamera yok")
 		return
+	var vp_size := get_viewport().get_visible_rect().size
+	print("[Probe] viewport=%s kamera=%s" % [str(vp_size), str(cam.global_position)])
 	var space := get_world_3d().direct_space_state
 	var pts := {
-		"ust-orta": Vector2(0.5, 0.12), "orta": Vector2(0.5, 0.5),
+		"ust-orta": Vector2(0.5, 0.12), "orta": Vector2(0.5, 0.50),
 		"alt-orta": Vector2(0.5, 0.92), "sol-alt": Vector2(0.12, 0.85),
 	}
 	for k in pts:
-		var sp: Vector2 = pts[k]
+		var sp: Vector2 = pts[k] * vp_size
 		var from := cam.project_ray_origin(sp)
 		var to := from + cam.project_ray_normal(sp) * 5000.0
 		var q := PhysicsRayQueryParameters3D.create(from, to)
 		var hit := space.intersect_ray(q)
 		if hit.is_empty():
-			print("[Probe] %-8s -> isabet yok" % k)
+			print("[Probe] %-8s (%s) -> fizik isabeti yok" % [k, str(sp)])
 		else:
 			var col = hit["collider"]
 			print("[Probe] %-8s -> %s  y=%.2f  xz=(%.0f, %.0f)" % [
 				k, col.name if col != null else "?", hit["position"].y,
 				hit["position"].x, hit["position"].z])
-	print("[Probe] su mesh AABB: %s  konum: %s" % [str(_water.get_aabb()), str(_water.global_position)])
-	print("[Probe] arazi AABB: %s" % str(_terrain.get_child(0).get_aabb()))
+	print("[Probe] su AABB: %s" % str(_water.get_aabb()))
+	print("[Probe] su material: %s" % ("ShaderMaterial" if _water.material_override is ShaderMaterial else str(_water.material_override)))
 
 
 func _process(delta: float) -> void:
