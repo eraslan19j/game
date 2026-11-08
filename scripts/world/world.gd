@@ -32,9 +32,6 @@ func _ready() -> void:
 		Vector3(0.0, camera_height, camera_distance)
 	)
 
-	# Fizik dunyasi bir kare sonra hazir olur; carpisma testini ondan sonra yap.
-	_verify_collision.call_deferred()
-
 	# Su, kiyi derinligini arazi dokusundan okur.
 	_water.setup(
 		_terrain.height_texture,
@@ -42,54 +39,6 @@ func _ready() -> void:
 		_terrain.height_min,
 		_terrain.height_max
 	)
-
-
-## Tanilama: arazi carpismasi gercekten calisiyor mu?
-## Deniz seviyesinin ustunde oldugunu bildigimiz noktalara isin gonderir.
-func _verify_collision() -> void:
-	# Trimesh carpisma sunucusuna bir sonraki fizik karesinde kaydolur.
-	await get_tree().physics_frame
-	await get_tree().physics_frame
-	var space := get_world_3d().direct_space_state
-	var tested := 0
-	var hits := 0
-	for p in [Vector2(0, 0), Vector2(20, 15), Vector2(-25, 30), Vector2(35, -20)]:
-		var from := Vector3(p.x, 200.0, p.y)
-		var query := PhysicsRayQueryParameters3D.create(from, from + Vector3(0, -300, 0))
-		var hit := space.intersect_ray(query)
-		tested += 1
-		if not hit.is_empty():
-			hits += 1
-			print("[Collision] (%.0f, %.0f) -> carpisma y=%.2f" % [p.x, p.y, hit["position"].y])
-		else:
-			print("[Collision] (%.0f, %.0f) -> CARPISMA YOK" % [p.x, p.y])
-	print("[Collision] sonuc: %d/%d nokta carpisti" % [hits, tested])
-
-	# --- Teshis: sekil gercekten olustu mu? ---
-	var shape_node := _terrain.get_node_or_null("Shape") as CollisionShape3D
-	if shape_node == null:
-		print("[Diag] Terrain altinda Shape dugumu YOK")
-	else:
-		var sh := shape_node.shape
-		print("[Diag] shape=%s disabled=%s parent=%s" % [
-			"null" if sh == null else sh.get_class(), shape_node.disabled, shape_node.get_parent().name])
-		if sh is ConcavePolygonShape3D:
-			print("[Diag] trimesh yuzey sayisi=%d" % (sh as ConcavePolygonShape3D).get_faces().size())
-	print("[Diag] Terrain cocuklari: %s" % [str(_terrain.get_children())])
-
-	# --- Teshis: isin sistemi bu sahnede calisiyor mu? (basit kutu) ---
-	var probe := StaticBody3D.new()
-	var probe_shape := CollisionShape3D.new()
-	probe_shape.shape = BoxShape3D.new()
-	probe.add_child(probe_shape)
-	probe.position = Vector3(0, 60, 0)
-	add_child(probe)
-	await get_tree().physics_frame
-	await get_tree().physics_frame
-	var q2 := PhysicsRayQueryParameters3D.create(Vector3(0, 200, 0), Vector3(0, -200, 0))
-	var h2 := get_world_3d().direct_space_state.intersect_ray(q2)
-	print("[Diag] test kutusu isini: %s" % ("CARPISTI y=%.2f" % h2["position"].y if not h2.is_empty() else "CARPISMADI"))
-	probe.queue_free()
 
 
 func _process(delta: float) -> void:
