@@ -117,6 +117,7 @@ current = true
 
 [node name="PerfLog" type="Node" parent="."]
 script = ExtResource("9_perf")
+debug_extra_shots = true
 
 [node name="SettingsMenu" type="CanvasLayer" parent="."]
 script = ExtResource("8_settings")

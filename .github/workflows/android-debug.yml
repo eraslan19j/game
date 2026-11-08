@@ -313,9 +313,12 @@ jobs:
           if [ -f /tmp/ci_screenshot.png ]; then
             cp /tmp/ci_screenshot.png ./ci_screenshot.png
           fi
+          for F in /tmp/ci_screenshot_*.png; do
+            [ -f "$F" ] && cp "$F" ./$(basename "$F")
+          done
           git checkout -q -b ci-logs
           git add export.log
-          git add ci_screenshot.png 2>/dev/null || true
+          git add ci_screenshot*.png 2>/dev/null || true
           git commit -q -m "CI tanilama logu: $(date -u +%Y-%m-%dT%H:%M:%SZ)" || true
           git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci-logs
         env:
