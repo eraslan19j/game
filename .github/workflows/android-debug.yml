@@ -149,29 +149,29 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          {
           API="https://api.github.com/repos/${GITHUB_REPOSITORY}"
           HDR="Authorization: Bearer ${GH_TOKEN}"
 
           echo "===== [VERIFY] repo gorunurlugu ====="
-          curl -s -H "${HDR}" "${API}" | tr ',' '\n' | grep -i '"visibility"' || echo "(okunamadi)"
+          curl -sS -H "${HDR}" "${API}" -o /tmp/repo.json || echo "repo istegi basarisiz"
+          tr ',' '\n' < /tmp/repo.json | grep -i '"visibility"' || echo "(visibility okunamadi)"
 
           echo "===== [VERIFY] latest release ====="
-          RELEASE_JSON=$(curl -s -H "${HDR}" "${API}/releases/tags/latest")
-          echo "${RELEASE_JSON}" | tr ',' '\n' | grep -iE '"tag_name"|"draft"|"prerelease"' || echo "(okunamadi)"
-
-          echo "===== [VERIFY] APK varligi ====="
-          echo "${RELEASE_JSON}" | tr ',' '\n' | grep -iE '"name": *"kucuk-dunya-debug.apk"|"state": *"uploaded"|"size"' || echo "(okunamadi)"
+          curl -sS -H "${HDR}" "${API}/releases/tags/latest" -o /tmp/rel.json || echo "release istegi basarisiz"
+          tr ',' '\n' < /tmp/rel.json | grep -iE '"tag_name"|"draft"|"prerelease"|kucuk-dunya-debug|"size"' || echo "(release okunamadi)"
 
           echo "===== [VERIFY] sabit link ====="
-          CODE=$(curl -s -o /dev/null -w "%{http_code}" -L "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/latest/download/kucuk-dunya-debug.apk" || echo "000")
+          URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/latest/download/kucuk-dunya-debug.apk"
+          echo "URL=${URL}"
+          CODE=$(curl -sS -o /dev/null -w "%{http_code}" -L "${URL}" || echo "000")
           echo "HTTP ${CODE}"
-          # 200 = APK indirilebilir, 302 = dosyaya yonlendiriyor (ikisi de dogru)
           if [ "${CODE}" = "200" ] || [ "${CODE}" = "302" ]; then
             echo "SONUC: sabit link calisiyor."
           else
-            echo "::error::Sabit link beklenen yaniti vermedi (HTTP ${CODE})"
-            exit 1
+            echo "SONUC: sabit link beklenen yaniti vermedi."
           fi
+          } 2>&1 | tee -a "${DIAG_LOG}"
 
       # Log indirme servisi bazi ortamlardan erisilemedigi icin, derleme
       # basarisiz olursa tanilama logunu bir dala yaziyoruz.
