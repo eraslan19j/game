@@ -15,6 +15,8 @@ game/
 ├─ project.godot            ← Godot proje ayarları (motor bunu okur)
 ├─ export_presets.cfg       ← Android export ayarları (APK bununla derlenir)
 ├─ icon.svg                 ← Uygulama ikonu
+├─ PROJE_KURALLARI.md       ← Bu projede uyulan kurallar
+├─ CREDITS.md               ← Dış görsel/ses kaynakları ve lisansları
 ├─ scenes/
 │  └─ world/
 │     └─ world.tscn         ← Açılış sahnesi: zemin, gökyüzü, güneş, kamera, birkaç ağaç
@@ -29,30 +31,29 @@ Yeni klasörler ileride `scenes/player/`, `scenes/props/`, `scripts/player/`, `a
 
 ---
 
-## 1️⃣ APK'yı indir (tek tık)
+## 1️⃣ APK'yı indir (tek link)
 
-1. Bilgisayarında veya telefonda tarayıcıdan şu adrese git:
-   **https://github.com/eraslan19j/game/actions**
-2. Soldaki listede **"Android Debug APK"** yazısına tıkla.
-3. En üstteki, yeşil ✓ işaretli çalıştırmaya tıkla (en yeni olan).
-4. Sayfayı aşağı kaydır → **Artifacts** başlığı altında
-   **`kucuk-dunya-debug-apk`** yazısına tıkla.
-5. `kucuk-dunya-debug-apk.zip` iner. Zip'i aç, içinde **`kucuk-dunya-debug.apk`** var.
+Telefonun tarayıcısında şu linke dokun:
 
-> Derleme genelde **3–6 dakika** sürer. Sayfa yenileniyorsa bekle; sarı nokta dönerken hâlâ derliyor demektir.
+**https://github.com/eraslan19j/game/releases/latest/download/kucuk-dunya-debug.apk**
 
----
+`kucuk-dunya-debug.apk` dosyası inmeye başlar. Başka hiçbir şeye tıklaman gerekmez.
+Bu link her zaman **en son sürümü** verir — derleme bitince otomatik güncellenir.
+
+> Alternatif (Actions'tan): https://github.com/eraslan19j/game/actions →
+> "Android Debug APK" → en üstteki yeşil ✓'li çalıştırma → **Artifacts** →
+> `kucuk-dunya-debug-apk`.
 
 ## 2️⃣ APK'yı telefona kur
 
-Telefonu USB ile bilgisayara bağla, sonra:
+Doğrudan telefondan indirdiysen dosya zaten **Downloads** klasöründe:
 
-1. İndirdiğin `.apk` dosyasını telefonun **Downloads** klasörüne kopyala.
-2. Telefonda **Dosyalar → Downloads** (İndirilenler) klasörünü aç.
-3. `kucuk-dunya-debug.apk` dosyasına dokun.
-4. Android uyaracak: *"Bilinmeyen kaynaklardan yüklemeye izin ver"* →
+1. Telefonda **Dosyalar → Downloads** (İndirilenler) klasörünü aç.
+   *(Bilgisayardan indirdiysen `.apk`'yı USB ile telefonun Downloads klasörüne kopyala.)*
+2. `kucuk-dunya-debug.apk` dosyasını bul ve üzerine dokun.
+3. Android uyaracak: *"Bilinmeyen kaynaklardan yüklemeye izin ver"* →
    **Ayarlar**'a götürür → **bu uygulamaya (Dosyalar/Chrome) izin ver** anahtarını aç.
-5. Geri dön → **Yükle** → **Aç**.
+4. Geri dön → **Yükle** → **Aç**.
 
 **Kurulmuyorsa:** telefonda *Play Protect* engelliyor olabilir →
 **Play Store → profil → Play Protect → Ayarlar → "Uygulamaları tara"yı kapat**, sonra tekrar dene.

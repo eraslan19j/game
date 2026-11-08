@@ -7,8 +7,14 @@ on:
       - main
   workflow_dispatch:
 
+# Release olusturup APK yukleyebilmek icin gerekli.
 permissions:
   contents: write
+
+# Ayni anda iki release calismasi cakismasin.
+concurrency:
+  group: android-debug-release
+  cancel-in-progress: false
 
 jobs:
   build-apk:
@@ -51,10 +57,9 @@ jobs:
             echo "===== [SETUP] android sdk ====="
             echo "ANDROID_HOME=${ANDROID_HOME:-yok}"
             ls -1 "${ANDROID_HOME:-/usr/lib/android-sdk}" 2>/dev/null
-            ls -1 "${ANDROID_HOME:-/usr/lib/android-sdk}"/build-tools 2>/dev/null
             java -version 2>&1
           } >> "${DIAG_LOG}" 2>&1
-          grep -v fontconfig "${DIAG_LOG}" | tail -40
+          grep -v fontconfig "${DIAG_LOG}" | tail -20
 
       # Ilk acilista Godot import eder (.godot klasoru olusur). Bu adim olmadan
       # export bazen bos/kirik pck uretir, o yuzden acikca yapiyoruz.
@@ -64,14 +69,12 @@ jobs:
             echo "===== [IMPORT] ====="
             godot --headless --editor --quit --path . 2>&1
           } >> "${DIAG_LOG}" 2>&1
-          grep -vE "fontconfig|get_system_font_path" "${DIAG_LOG}" | tail -15
+          grep -vE "fontconfig|get_system_font_path" "${DIAG_LOG}" | tail -10
 
       - name: Debug APK export et
-        id: export
         run: |
           mkdir -p build/android
           APK_PATH="$(readlink -f build/android)/${APK_NAME}"
-          echo "APK hedefi: ${APK_PATH}"
           {
             echo "===== [EXPORT] ${EXPORT_PRESET} -> ${APK_PATH} ====="
           } >> "${DIAG_LOG}"
@@ -80,8 +83,7 @@ jobs:
           CODE=$?
           set -e
           echo "GODOT_EXIT=${CODE}"
-          echo "===== [EXPORT] cikti (son 80 satir) ====="
-          grep -vE "fontconfig|get_system_font_path" "${DIAG_LOG}" | tail -80
+          grep -vE "fontconfig|get_system_font_path" "${DIAG_LOG}" | tail -40
           if [ "${CODE}" -ne 0 ]; then
             echo "::error::Godot export ${CODE} koduyla basarisiz oldu"
             exit "${CODE}"
@@ -95,16 +97,15 @@ jobs:
       - name: APK icerigini dogrula
         run: |
           {
-            echo "===== [INSPECT] APK icerigi ====="
-            unzip -l "build/android/$APK_NAME" | tail -20
             echo "===== [INSPECT] yerel kutuphaneler ====="
             unzip -l "build/android/$APK_NAME" | grep -oE 'lib/[a-z0-9_]+/[a-z0-9_.]+\.so' | sort -u
-            echo "===== [INSPECT] manifest (aapt2) ====="
+            echo "===== [INSPECT] manifest ====="
             AAPT=$(ls "${ANDROID_HOME}"/build-tools/*/aapt2 2>/dev/null | tail -1)
-            echo "aapt2=${AAPT}"
-            "${AAPT}" dump badging "build/android/$APK_NAME" 2>&1 | head -12
+            "${AAPT}" dump badging "build/android/$APK_NAME" 2>&1 | grep -E "^package:|^sdkVersion|^targetSdkVersion|^application-label:|^native-code" | head -8
+            echo "===== [INSPECT] boyut ====="
+            stat -c '%s bytes' "build/android/$APK_NAME"
           } >> "${DIAG_LOG}" 2>&1
-          sed -n '/\[INSPECT\]/,$p' "${DIAG_LOG}"
+          sed -n '/\[INSPECT\]/,$p' "${DIAG_LOG}" | tail -20
 
       - name: APK'yi artifact olarak yukle
         uses: actions/upload-artifact@v4
@@ -114,10 +115,46 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      # Log indirme servisi bazi ortamlardan erisilemedigi icin, tanilama
-      # logunu her durumda bir dala yaziyoruz.
-      - name: Tanilama logunu yaz
-        if: always()
+      # ---------------------------------------------------------------
+      # "latest" Release'ini olustur/guncelle ve APK'yi oraya koy.
+      # Sabit link: /releases/latest/download/kucuk-dunya-debug.apk
+      # ---------------------------------------------------------------
+      - name: latest Release guncelle
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          APK_FILE: build/android/kucuk-dunya-debug.apk
+        run: |
+          set -euo pipefail
+          TAG="latest"
+          echo "Depo gorunurlugu:"
+          gh api "repos/${GH_REPO}" -q '.visibility' || true
+
+          # latest etiketli release var mi?
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Mevcut ${TAG} release'i bulundu, once eski APK siliniyor."
+            gh release delete-asset "${TAG}" "${APK_NAME}" -y || echo "Silinecek eski APK yok."
+            gh release edit "${TAG}" --title "En son surum (latest)" --notes "Her main push'unda otomatik guncellenir. APK: ${APK_NAME}"
+          else
+            echo "Yeni ${TAG} release'i olusturuluyor."
+            gh release create "${TAG}" \
+              --title "En son surum (latest)" \
+              --notes "Her main push'unda otomatik guncellenir. APK: ${APK_NAME}" \
+              --prerelease=false
+          fi
+
+          # Yeni APK'yi yukle
+          gh release upload "${TAG}" "${APK_FILE}" --clobber
+
+          echo "===== Release icerigi ====="
+          gh release view "${TAG}" --json tagName,isDraft,isPrerelease,assets \
+            -q '"tag=\(.tagName) draft=\(.isDraft) prerelease=\(.isPrerelease) assets=\(.assets[].name)"'
+          echo "Sabit link: https://github.com/${GH_REPO}/releases/latest/download/${APK_NAME}"
+
+      # Log indirme servisi bazi ortamlardan erisilemedigi icin, derleme
+      # basarisiz olursa tanilama logunu bir dala yaziyoruz.
+      - name: Tanilama logunu yaz (sadece basarisizlikta)
+        if: failure()
         run: |
           set -x
           grep -vE "fontconfig|get_system_font_path" "${DIAG_LOG}" > /tmp/export_clean.log || true
@@ -126,7 +163,6 @@ jobs:
           git config user.name "ci-diagnostics"
           git config user.email "ci@localhost"
           cp /tmp/export_clean.log ./export.log
-          ls -la build 2>/dev/null || true
           git checkout -q -b ci-logs
           git add export.log
           git commit -q -m "CI tanilama logu: $(date -u +%Y-%m-%dT%H:%M:%SZ)" || true
