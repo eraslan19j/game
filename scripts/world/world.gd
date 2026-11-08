@@ -40,14 +40,9 @@ func _ready() -> void:
 		var cloud_mat := _clouds.material_override as ShaderMaterial
 		cloud_mat.set_shader_parameter("cloud_noise", CloudTextureGen.build())
 
-	# Su, kiyi derinligini arazi dokusundan okur.
+	# Su dalga ayarlarini uygula.
 	if _water.has_method("setup"):
-		_water.setup(
-			_terrain.height_texture,
-			_terrain.world_size,
-			_terrain.height_min,
-			_terrain.height_max
-		)
+		_water.setup()
 
 
 func _process(delta: float) -> void:

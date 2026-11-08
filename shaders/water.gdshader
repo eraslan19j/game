@@ -1,19 +1,19 @@
 shader_type spatial;
-render_mode shadows_disabled;
 // Stilize su: hafif dalga (vertex), yari saydam, kiyida acik renk + kopuk.
-// Arazi yukseklik dokusu R kanalinda 0..1 olarak gelir.
+// Derinlik tamamen GEOMETRIDEN gelir: derin bolgelerde duzlemle kamera
+// arasindaki mesafe artar. Doku okumaya bagimli degil (guvenli).
+render_mode shadows_disabled;
 
-uniform sampler2D terrain_height : filter_linear, repeat_disable;
-uniform float terrain_size = 200.0;
-uniform float height_min = -30.0;
-uniform float height_max = 45.0;
+uniform vec4 shallow_color : source_color = vec4(0.30, 0.78, 0.78, 1.0);
+uniform vec4 deep_color : source_color = vec4(0.05, 0.31, 0.50, 1.0);
+uniform vec4 foam_color : source_color = vec4(0.92, 0.99, 0.99, 1.0);
+uniform vec4 shore_color : source_color = vec4(0.72, 0.93, 0.90, 1.0);
 uniform float wave_speed = 1.0;
 uniform float wave_strength = 1.0;
-uniform vec4 shallow_color : source_color = vec4(0.24, 0.72, 0.72, 1.0);
-uniform vec4 deep_color : source_color = vec4(0.05, 0.30, 0.47, 1.0);
-uniform vec4 foam_color : source_color = vec4(0.95, 0.99, 0.99, 1.0);
-uniform float alpha_shallow = 0.78;
-uniform float alpha_deep = 0.96;
+uniform float alpha_shallow = 0.55;
+uniform float alpha_deep = 0.95;
+uniform float depth_near = 90.0;
+uniform float depth_far = 330.0;
 
 varying vec3 world_pos;
 
@@ -30,7 +30,6 @@ void vertex() {
 	float h0 = wave_height(VERTEX.xz, t);
 	VERTEX.y += h0;
 
-	// Normal'i dalga turevi ile yumusakca boz.
 	float e = 0.9;
 	float hx = wave_height(VERTEX.xz + vec2(e, 0.0), t);
 	float hz = wave_height(VERTEX.xz + vec2(0.0, e), t);
@@ -41,29 +40,27 @@ void vertex() {
 }
 
 void fragment() {
-	// Bu noktanin altindaki arazi yuksekligi.
-	// Doku kenarina kenetle: ada disinda da derinlik dogru kalsin, dikis olmasin.
-	vec2 tuv = clamp(world_pos.xz / terrain_size + 0.5, vec2(0.0), vec2(1.0));
-	float raw = texture(terrain_height, tuv).r;
-	float th = mix(height_min, height_max, raw);
+	// Kamera ile bu nokta arasindaki mesafe: ada uzerinde kisa, acik denizde uzun.
+	float dist = length(world_pos - CAMERA_POSITION_WORLD);
+	// Ada merkezine uzaklik: kiyiya yakin mi?
+	float island_dist = length(world_pos.xz);
 
-	// Su derinligi (0 = kiyi, buyuk = derin).
-	float depth = clamp(world_pos.y - th, 0.0, 60.0);
+	float far_mix = smoothstep(depth_near, depth_far, dist);
+	vec3 col = mix(shallow_color.rgb, deep_color.rgb, far_mix);
 
-	float deep_mix = smoothstep(0.5, 4.0, depth);
-	vec3 col = mix(shallow_color.rgb, deep_color.rgb, deep_mix);
+	// Ada cevresinde ince acik kiyi halkasi.
+	float shore = 1.0 - smoothstep(72.0, 96.0, island_dist);
+	col = mix(col, shore_color.rgb, shore * 0.55);
+	float foam = (1.0 - smoothstep(76.0, 84.0, island_dist)) * shore;
+	col = mix(col, foam_color.rgb, foam * 0.6);
 
-	// Kiyida ince beyaz kopuk bandi (genis alanlari kaplamasin).
-	float foam = 1.0 - smoothstep(0.0, 0.22, depth);
-	col = mix(col, foam_color.rgb, foam * 0.7);
-
-	ALBEDO = col * 0.96;
-	ROUGHNESS = 0.52;
+	ALBEDO = col;
+	ROUGHNESS = 0.55;
 	METALLIC = 0.0;
 	SPECULAR = 0.04;
-	ALPHA = mix(alpha_shallow, alpha_deep, deep_mix) + foam * 0.15;
-	ALPHA = clamp(ALPHA, 0.0, 1.0);
 
-	// Hafif isilti (gunes parlamasi) icin normali kullaniyoruz; ekstra efekt yok.
-	NORMAL_MAP_DEPTH = 0.0;
+	// Kiyida daha saydam, acik denizde neredeyse opak.
+	float a = mix(alpha_shallow, alpha_deep, far_mix);
+	a = max(a, shore * 0.75);
+	ALPHA = clamp(a, 0.0, 1.0);
 }
