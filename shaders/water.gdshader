@@ -8,10 +8,10 @@ uniform float height_min = -30.0;
 uniform float height_max = 45.0;
 uniform float wave_speed = 1.0;
 uniform float wave_strength = 1.0;
-uniform vec4 shallow_color : source_color = vec4(0.36, 0.79, 0.79, 1.0);
+uniform vec4 shallow_color : source_color = vec4(0.24, 0.72, 0.72, 1.0);
 uniform vec4 deep_color : source_color = vec4(0.05, 0.30, 0.47, 1.0);
 uniform vec4 foam_color : source_color = vec4(0.95, 0.99, 0.99, 1.0);
-uniform float alpha_shallow = 0.42;
+uniform float alpha_shallow = 0.62;
 uniform float alpha_deep = 0.96;
 
 varying vec3 world_pos;
@@ -52,7 +52,7 @@ void fragment() {
 	// Su derinligi (0 = kiyi, buyuk = derin).
 	float depth = clamp(world_pos.y - th, 0.0, 60.0);
 
-	float deep_mix = smoothstep(0.4, 6.0, depth);
+	float deep_mix = smoothstep(0.5, 4.0, depth);
 	vec3 col = mix(shallow_color.rgb, deep_color.rgb, deep_mix);
 
 	// Kiyida ince beyaz kopuk bandi (genis alanlari kaplamasin).

@@ -9,10 +9,10 @@ extends StaticBody3D
 
 @export var world_size: float = 200.0
 @export var grid_cells: int = 128
-@export var island_radius: float = 78.0
+@export var island_radius: float = 74.0
 @export var sea_level: float = 0.0
-@export var base_height: float = 14.0
-@export var hill_amplitude: float = 9.0
+@export var base_height: float = 13.0
+@export var hill_amplitude: float = 11.0
 @export var detail_amplitude: float = 3.0
 @export var noise_seed: int = 20261108
 @export var toon_material: Material = null
@@ -80,8 +80,8 @@ func height_at(x: float, z: float) -> float:
 	var big := _noise_big.get_noise_2d(x, z)
 	var small := _noise_small.get_noise_2d(x, z)
 	var h := falloff * (base_height + big * hill_amplitude + small * detail_amplitude)
-	# Kiyida deniz seviyesinin altina yumusak iniş.
-	h += (falloff - 1.0) * 4.0
+	# Kiyidan sonra hizli derinlesme: sig sahanligi yerine gercek derin su.
+	h += (falloff - 1.0) * 18.0
 	return h + sea_level
 
 
