@@ -1,25 +1,27 @@
 extends Node3D
-## Basit 3D test sahnesi.
-## Bu script sadece sahneyi "canli" gostermek icin var:
-##   - Gunes'in acisini ayarlar
-##   - Kamerayi yavasca sahnenin etrafinda dondurur (3D oldugu belli olsun diye)
+## Kucuk Dunya - ada sahnesi.
 ##
-## Kameranin donmesini istemiyorsan: orbit_speed_deg degerini 0 yap.
+## Bu script:
+##   - Gunes acisini ayarlar
+##   - Su shader'ina arazi yukseklik dokusunu verir (kiyi rengi icin)
+##   - Kamerayi yavasca sahnenin etrafinda dondurur (3D oldugu belli olsun diye)
 
 @export var orbit_speed_deg: float = 6.0
-@export var camera_distance: float = 14.0
-@export var camera_height: float = 6.0
-@export var camera_pitch_deg: float = -20.0
+@export var camera_distance: float = 60.0
+@export var camera_height: float = 22.0
+@export var camera_pitch_deg: float = -19.0
 @export var sun_pitch_deg: float = -48.0
 @export var sun_yaw_deg: float = -42.0
 
 @onready var _sun: DirectionalLight3D = $Sun
+@onready var _terrain: StaticBody3D = $Terrain
+@onready var _water: MeshInstance3D = $Water
 @onready var _camera_rig: Node3D = $CameraRig
 @onready var _camera: Camera3D = $CameraRig/Camera3D
 
 
 func _ready() -> void:
-	# Gunes yonunu burada aciyruz; .tscn icinde hatali matris olmasi riskini boylece kaldiriyoruz.
+	# Gunes yonunu burada aciyoruz; .tscn icinde hatali matris olmasi riskini kaldirir.
 	_sun.rotation_degrees = Vector3(sun_pitch_deg, sun_yaw_deg, 0.0)
 
 	# Kamerayi merkeze bakacak sekilde yerlestir.
@@ -28,6 +30,14 @@ func _ready() -> void:
 	_camera.transform = Transform3D(
 		camera_basis,
 		Vector3(0.0, camera_height, camera_distance)
+	)
+
+	# Su, kiyi derinligini arazi dokusundan okur.
+	_water.setup(
+		_terrain.height_texture,
+		_terrain.world_size,
+		_terrain.height_min,
+		_terrain.height_max
 	)
 
 

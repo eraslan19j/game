@@ -1,6 +1,9 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/world.gd" id="1_world"]
+[ext_resource type="Script" path="res://scripts/world/terrain.gd" id="2_terrain"]
+[ext_resource type="Script" path="res://scripts/world/water.gd" id="3_water"]
+[ext_resource type="Shader" path="res://shaders/water.gdshader" id="4_watershader"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.211765, 0.439216, 0.690196, 1)
@@ -24,51 +27,11 @@ reflected_light_source = 2
 tonemap_mode = 2
 fog_enabled = true
 fog_light_color = Color(0.909804, 0.847059, 0.741176, 1)
-fog_density = 0.008
+fog_density = 0.004
 fog_sky_affect = 0.0
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
-size = Vector2(60, 60)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
-size = Vector3(60, 1, 60)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
-albedo_color = Color(0.505882, 0.694118, 0.415686, 1)
-roughness = 1.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rock"]
-albedo_color = Color(0.717647, 0.682353, 0.635294, 1)
-roughness = 0.85
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_leaf"]
-albedo_color = Color(0.454902, 0.729412, 0.360784, 1)
-roughness = 0.9
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trunk"]
-albedo_color = Color(0.54902, 0.431373, 0.32549, 1)
-roughness = 0.9
-
-[sub_resource type="SphereMesh" id="SphereMesh_tree_a"]
-radius = 1.6
-height = 3.2
-
-[sub_resource type="SphereMesh" id="SphereMesh_tree_b"]
-radius = 1.2
-height = 2.4
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_trunk"]
-top_radius = 0.22
-bottom_radius = 0.3
-height = 2.2
-
-[sub_resource type="BoxMesh" id="BoxMesh_rock"]
-size = Vector3(1.8, 1.2, 1.6)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_rock"]
-top_radius = 0.9
-bottom_radius = 1.1
-height = 1.2
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
+shader = ExtResource("4_watershader")
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_world")
@@ -80,69 +43,20 @@ environment = SubResource("Environment_main")
 light_color = Color(1, 0.941176, 0.854902, 1)
 light_energy = 1.3
 shadow_enabled = true
-directional_shadow_max_distance = 60.0
+directional_shadow_max_distance = 90.0
+directional_shadow_mode = 0
 
-[node name="Ground" type="StaticBody3D" parent="."]
+[node name="Terrain" type="StaticBody3D" parent="."]
+script = ExtResource("2_terrain")
 
-[node name="Mesh" type="MeshInstance3D" parent="Ground"]
-mesh = SubResource("PlaneMesh_ground")
-surface_material_override/0 = SubResource("StandardMaterial3D_ground")
-
-[node name="Shape" type="CollisionShape3D" parent="Ground"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-shape = SubResource("BoxShape3D_ground")
-
-[node name="TreeA" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -2.5)
-
-[node name="Trunk" type="MeshInstance3D" parent="TreeA"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
-mesh = SubResource("CylinderMesh_trunk")
-surface_material_override/0 = SubResource("StandardMaterial3D_trunk")
-
-[node name="Leaves" type="MeshInstance3D" parent="TreeA"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, 0)
-mesh = SubResource("SphereMesh_tree_a")
-surface_material_override/0 = SubResource("StandardMaterial3D_leaf")
-
-[node name="TreeB" type="Node3D" parent="."]
-transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 3.8, 0, -3.6)
-
-[node name="Trunk" type="MeshInstance3D" parent="TreeB"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
-mesh = SubResource("CylinderMesh_trunk")
-surface_material_override/0 = SubResource("StandardMaterial3D_trunk")
-
-[node name="Leaves" type="MeshInstance3D" parent="TreeB"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 0)
-mesh = SubResource("SphereMesh_tree_b")
-surface_material_override/0 = SubResource("StandardMaterial3D_leaf")
-
-[node name="TreeC" type="Node3D" parent="."]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 5.2, 0, 2.6)
-
-[node name="Trunk" type="MeshInstance3D" parent="TreeC"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
-mesh = SubResource("CylinderMesh_trunk")
-surface_material_override/0 = SubResource("StandardMaterial3D_trunk")
-
-[node name="Leaves" type="MeshInstance3D" parent="TreeC"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, 0)
-mesh = SubResource("SphereMesh_tree_a")
-surface_material_override/0 = SubResource("StandardMaterial3D_leaf")
-
-[node name="RockA" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0.6, 3.4)
-mesh = SubResource("BoxMesh_rock")
-surface_material_override/0 = SubResource("StandardMaterial3D_rock")
-
-[node name="RockB" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0.6, 4.2)
-mesh = SubResource("CylinderMesh_rock")
-surface_material_override/0 = SubResource("StandardMaterial3D_rock")
+[node name="Water" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_water")
+script = ExtResource("3_water")
 
 [node name="CameraRig" type="Node3D" parent="."]
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig"]
-fov = 60.0
+fov = 55.0
+near = 0.1
+far = 900.0
 current = true

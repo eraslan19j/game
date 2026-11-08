@@ -71,6 +71,32 @@ jobs:
           } >> "${DIAG_LOG}" 2>&1
           grep -vE "fontconfig|get_system_font_path" "${DIAG_LOG}" | tail -10
 
+      # Projeyi gercekten bir kez calistirip script/shader hatalarini yakala.
+      # Boylece hatalar kullaniciya gitmeden once duzeltilir.
+      - name: Projeyi headless calistir (duman testi)
+        run: |
+          {
+            echo "===== [SMOKE] calistirma ====="
+          } >> "${DIAG_LOG}"
+          set +e
+          timeout 180 godot --headless --quit-after 120 --path . >> "${DIAG_LOG}" 2>&1
+          CODE=$?
+          set -e
+          echo "SMOKE_EXIT=${CODE}"
+          CLEAN=$(grep -vE "fontconfig|get_system_font_path|Unrecognized output string|Horipad|Nintendo Switch|SDL: Init OK|Orphan StringName|StringName: |Unclaimed|XR: " "${DIAG_LOG}" | sed -n '/\[SMOKE\]/,$p')
+          echo "${CLEAN}" | tail -40
+
+          if [ "${CODE}" -ne 0 ] && [ "${CODE}" -ne 124 ]; then
+            echo "::error::Oyun headless calisirken cikti (kod ${CODE})"
+            exit 1
+          fi
+          if echo "${CLEAN}" | grep -qE "SCRIPT ERROR|Parse Error|SHADER ERROR|Invalid call|Cannot open file|Assertion failed"; then
+            echo "::error::Calistirma sirasinda script/shader hatasi bulundu"
+            exit 1
+          fi
+          echo "SONUC: oyun hatasiz acildi."
+          grep -E "Terrain|ada|arazi|height_texture|Water" "${DIAG_LOG}" | tail -5 || true
+
       - name: Debug APK export et
         run: |
           mkdir -p build/android
