@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/world.gd" id="1_world"]
 [ext_resource type="Script" path="res://scripts/world/terrain.gd" id="2_terrain"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/world/sky_cycle.gd" id="7_sky"]
 [ext_resource type="Script" path="res://scripts/ui/settings_menu.gd" id="8_settings"]
 [ext_resource type="Script" path="res://scripts/world/perf_log.gd" id="9_perf"]
+[ext_resource type="Script" path="res://scripts/world/nature.gd" id="10_nature"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.13, 0.42, 0.82, 1)
@@ -98,6 +99,9 @@ cast_shadow = 0
 [node name="Terrain" type="StaticBody3D" parent="."]
 script = ExtResource("2_terrain")
 toon_material = SubResource("ShaderMaterial_toon_ground")
+
+[node name="Nature" type="Node3D" parent="."]
+script = ExtResource("10_nature")
 
 [node name="Water" type="MeshInstance3D" parent="."]
 material_override = SubResource("ShaderMaterial_water")

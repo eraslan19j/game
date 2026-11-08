@@ -19,6 +19,7 @@ const CloudTextureGen = preload("res://scripts/world/cloud_texture.gd")
 @onready var _terrain: StaticBody3D = $Terrain
 @onready var _water: MeshInstance3D = $Water
 @onready var _clouds: MeshInstance3D = $Clouds
+@onready var _nature: Node3D = $Nature
 @onready var _camera_rig: Node3D = $CameraRig
 @onready var _camera: Camera3D = $CameraRig/Camera3D
 
@@ -43,6 +44,10 @@ func _ready() -> void:
 	# Su dalga ayarlarini uygula.
 	if _water.has_method("setup"):
 		_water.setup()
+
+	# Dogal yasam: agac, cali, kaya, cicek, cim, kum (kaliteye gore yogunluk).
+	if _nature != null and _nature.has_method("build"):
+		_nature.build(_terrain, QualitySettings.level)
 
 
 

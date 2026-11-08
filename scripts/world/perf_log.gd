@@ -27,6 +27,12 @@ func _process(delta: float) -> void:
 		prims = int(vp.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE, Viewport.RENDER_INFO_PRIMITIVES_IN_FRAME))
 	print("[Perf] renderer=%s  fps=%.1f (%d kare / %.2f sn)  cizim=%d  ucgen=%d" % [
 		RenderingServer.get_video_adapter_name(), fps, _frames, _time, draw_calls, prims])
+	var vp2 := get_viewport()
+	if vp2 != null:
+		print("[Perf] cizim=%d  ucgen=%d  nesne=%d" % [
+			int(vp2.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE, Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME)),
+			int(vp2.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE, Viewport.RENDER_INFO_PRIMITIVES_IN_FRAME)),
+			int(vp2.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE, Viewport.RENDER_INFO_OBJECTS_IN_FRAME))])
 	print("[Perf] kalite=%s  golge=%s  fps_hedefi=30+" % [
 		QualitySettings.level_name(),
 		"acik" if QualitySettings.preset()["shadow_enabled"] else "kapali"])

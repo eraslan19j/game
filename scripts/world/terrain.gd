@@ -25,6 +25,10 @@ var height_texture: ImageTexture = null
 var height_min: float = HEIGHT_MIN
 var height_max: float = HEIGHT_MAX
 
+# Dogal yasam (agac/cim/kaya) icin hizli sorgu: mesh uretilirken saklanir.
+var heights_grid: PackedFloat32Array = PackedFloat32Array()
+var grid_n: int = 0
+
 var _cell: float = 1.0
 var _noise_big: FastNoiseLite
 var _noise_small: FastNoiseLite
@@ -34,9 +38,43 @@ var _mesh_instance: MeshInstance3D
 func _ready() -> void:
 	_setup_noise()
 	var built := _build_mesh()
+	heights_grid = built["heights"]
+	grid_n = built["n"]
 	_add_collision(built["mesh"])
 	_build_height_texture(built["heights"], built["n"])
 	_report_stats(built["heights"])
+
+
+## Izgara uzerinden iki dogrusal (bilinear) yukseklik: doga yerlestirmesi icin hizli.
+func sample_height(x: float, z: float) -> float:
+	if grid_n < 2:
+		return height_at(x, z)
+	var half: float = world_size * 0.5
+	var fx: float = clampf((x + half) / _cell, 0.0, float(grid_n - 1) - 0.001)
+	var fz: float = clampf((z + half) / _cell, 0.0, float(grid_n - 1) - 0.001)
+	var ix := int(fx)
+	var iz := int(fz)
+	var tx: float = fx - float(ix)
+	var tz: float = fz - float(iz)
+	var i0: int = iz * grid_n + ix
+	var h00: float = heights_grid[i0]
+	var h10: float = heights_grid[i0 + 1]
+	var h01: float = heights_grid[i0 + grid_n]
+	var h11: float = heights_grid[i0 + grid_n + 1]
+	return lerpf(lerpf(h00, h10, tx), lerpf(h01, h11, tx), tz)
+
+
+## Egim: 0 = tamamen duz, 1 = cok dik. (normalin y'si = 1/sqrt(1+egim^2))
+func sample_slope(x: float, z: float) -> float:
+	var e: float = maxf(_cell, 0.5)
+	var dx: float = (sample_height(x + e, z) - sample_height(x - e, z)) / (2.0 * e)
+	var dz: float = (sample_height(x, z + e) - sample_height(x, z - e)) / (2.0 * e)
+	return sqrt(dx * dx + dz * dz)
+
+
+func sample_normal_y(x: float, z: float) -> float:
+	var sl := sample_slope(x, z)
+	return 1.0 / sqrt(1.0 + sl * sl)
 
 
 ## Baslangicta tek satir ozet yazar (ada gercekten ada mi?).
