@@ -188,11 +188,22 @@ func _add_collision(mesh: ArrayMesh) -> void:
 
 ## Su shader'i icin yukseklik dokusu (0..1 araligina normalize edilmis).
 func _build_height_texture(heights: PackedFloat32Array, n: int) -> void:
+	# Gercek min/max'i bul: sabit aralik kullanmak derinligi yanlis hesaplatiyordu.
+	var lo := 1.0e9
+	var hi := -1.0e9
+	for h in heights:
+		lo = minf(lo, h)
+		hi = maxf(hi, h)
+	# Su yuzeyinin (0 m) tam ortada kalmasi icin araligi iki tarafa da genislet.
+	var reach: float = maxf(maxf(absf(lo), absf(hi)), 1.0)
+	height_min = -reach
+	height_max = reach
+
 	var img := Image.create(n, n, false, Image.FORMAT_RGB8)
-	var span: float = HEIGHT_MAX - HEIGHT_MIN
+	var span: float = maxf(height_max - height_min, 0.001)
 	for iz in n:
 		for ix in n:
-			var v: float = (heights[iz * n + ix] - HEIGHT_MIN) / span
+			var v: float = (heights[iz * n + ix] - height_min) / span
 			v = clampf(v, 0.0, 1.0)
 			img.set_pixel(ix, iz, Color(v, 0.0, 0.0))
 	height_texture = ImageTexture.create_from_image(img)

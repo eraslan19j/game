@@ -41,13 +41,10 @@ void vertex() {
 
 void fragment() {
 	// Bu noktanin altindaki arazi yuksekligi.
-	vec2 tuv = world_pos.xz / terrain_size + 0.5;
-	float inside = step(0.0, tuv.x) * step(tuv.x, 1.0) * step(0.0, tuv.y) * step(tuv.y, 1.0);
-	float th = height_min;
-	if (inside > 0.5) {
-		float raw = texture(terrain_height, tuv).r;
-		th = mix(height_min, height_max, raw);
-	}
+	// Doku kenarina kenetle: ada disinda da derinlik dogru kalsin, dikis olmasin.
+	vec2 tuv = clamp(world_pos.xz / terrain_size + 0.5, vec2(0.0), vec2(1.0));
+	float raw = texture(terrain_height, tuv).r;
+	float th = mix(height_min, height_max, raw);
 
 	// Su derinligi (0 = kiyi, buyuk = derin).
 	float depth = clamp(world_pos.y - th, 0.0, 60.0);
