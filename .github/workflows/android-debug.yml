@@ -149,18 +149,29 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -euo pipefail
+          API="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          HDR="Authorization: Bearer ${GH_TOKEN}"
+
           echo "===== [VERIFY] repo gorunurlugu ====="
-          curl -s -H "Authorization: Bearer ${GH_TOKEN}" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}" \
-            | grep -o '"visibility": *"[a-z]*"' || true
+          curl -s -H "${HDR}" "${API}" | tr ',' '\n' | grep -i '"visibility"' || echo "(okunamadi)"
+
           echo "===== [VERIFY] latest release ====="
-          curl -s -H "Authorization: Bearer ${GH_TOKEN}" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/latest" \
-            | grep -oE '"tag_name": *"[^"]*"|"draft": *(true|false)|"prerelease": *(true|false)|"name": *"kucuk-dunya-debug.apk"|"size": *[0-9]+' || true
-          echo "===== [VERIFY] sabit link (HTTP durum kodu) ====="
-          curl -s -o /dev/null -w "HTTP %{http_code} -> %{url_effective}\n" -L \
-            "https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/kucuk-dunya-debug.apk" || true
+          RELEASE_JSON=$(curl -s -H "${HDR}" "${API}/releases/tags/latest")
+          echo "${RELEASE_JSON}" | tr ',' '\n' | grep -iE '"tag_name"|"draft"|"prerelease"' || echo "(okunamadi)"
+
+          echo "===== [VERIFY] APK varligi ====="
+          echo "${RELEASE_JSON}" | tr ',' '\n' | grep -iE '"name": *"kucuk-dunya-debug.apk"|"state": *"uploaded"|"size"' || echo "(okunamadi)"
+
+          echo "===== [VERIFY] sabit link ====="
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" -L "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/latest/download/kucuk-dunya-debug.apk" || echo "000")
+          echo "HTTP ${CODE}"
+          # 200 = APK indirilebilir, 302 = dosyaya yonlendiriyor (ikisi de dogru)
+          if [ "${CODE}" = "200" ] || [ "${CODE}" = "302" ]; then
+            echo "SONUC: sabit link calisiyor."
+          else
+            echo "::error::Sabit link beklenen yaniti vermedi (HTTP ${CODE})"
+            exit 1
+          fi
 
       # Log indirme servisi bazi ortamlardan erisilemedigi icin, derleme
       # basarisiz olursa tanilama logunu bir dala yaziyoruz.
