@@ -27,16 +27,19 @@ float wave_height(vec2 p, float t) {
 
 void vertex() {
 	float t = TIME * wave_speed;
-	// Dalgalar kiyiya yakinken soner: boylece ada ile suyun bulusma hatti
-	// duzgun bir cizgi olur (dalga yuzunden testere disi olusmaz).
+	// Dalga YUKSEKLIGI kiyida soner: ada ile suyun bulusma hatti duzgun olur.
+	// Ancak NORMAL her zaman dalgadan hesaplanir. Aksi halde (normali de
+	// sonumlersek) ada cevresindeki su duzlesir, fazla isik alir ve
+	// goruntude PARLAK BIR HALKA olusur. Bu halkayi tam olarak bu yapiyordu.
 	float world_r = length((MODEL_MATRIX * vec4(VERTEX, 1.0)).xz);
 	float damp = smoothstep(78.0, 150.0, world_r);
-	float h0 = wave_height(VERTEX.xz, t) * damp;
-	VERTEX.y += h0;
+
+	float h0 = wave_height(VERTEX.xz, t);
+	VERTEX.y += h0 * damp;
 
 	float e = 0.9;
-	float hx = wave_height(VERTEX.xz + vec2(e, 0.0), t) * damp;
-	float hz = wave_height(VERTEX.xz + vec2(0.0, e), t) * damp;
+	float hx = wave_height(VERTEX.xz + vec2(e, 0.0), t);
+	float hz = wave_height(VERTEX.xz + vec2(0.0, e), t);
 	vec3 n = normalize(vec3(-(hx - h0) / e, 1.0, -(hz - h0) / e));
 	NORMAL = normalize(mix(NORMAL, n, 0.75));
 
@@ -69,21 +72,4 @@ void fragment() {
 	// su opak olur, derinligi yazar ve kare tamamen kaybolur.
 	//
 	// Kiyi hissi renkle veriliyor: foam halkasi (yukarida).
-}
-
-// GECICI TANI: uc varyant tek karede
-void light() {
-	DIFFUSE_LIGHT += LIGHT_COLOR * ATTENUATION * 0.62 / PI;
-	bool a = SCREEN_UV.x < 0.34;
-	bool b = SCREEN_UV.x >= 0.34 && SCREEN_UV.x < 0.67;
-	// 1) derinlik yaz + duz albedo (opak, standart)
-	// 2) normali yukari sabitle
-	// 3) sabit albedo, isiklandirmasiz gibi
-	if (a) {
-		DIFFUSE_LIGHT = vec3(0.0);
-		ALBEDO = vec3(0.05, 0.20, 0.34);
-	} else if (b) {
-		NORMAL = vec3(0.0, 1.0, 0.0);
-		ALBEDO = vec3(0.05, 0.20, 0.34);
-	}
 }
