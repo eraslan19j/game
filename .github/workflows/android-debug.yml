@@ -105,11 +105,13 @@ jobs:
           set -x
           SUDO=""
           if command -v sudo >/dev/null 2>&1; then SUDO="sudo"; fi
-          ${SUDO} apt-get update -qq || apt-get update -qq
-          ${SUDO} apt-get install -y --no-install-recommends xvfb libgl1-mesa-dri libglx-mesa0 libegl-mesa0 libglu1-mesa || \
-            apt-get install -y --no-install-recommends xvfb libgl1-mesa-dri libglx-mesa0 libegl-mesa0 libglu1-mesa
+          PKGS="xvfb libgl1 libglx-mesa0 libgl1-mesa-dri libegl-mesa0 \
+                libxcursor1 libxinerama1 libxrandr2 libxi6 libxkbcommon0 \
+                libwayland-client0 libwayland-cursor0 libdecor-0-0"
+          (${SUDO} apt-get update -qq && ${SUDO} apt-get install -y --no-install-recommends ${PKGS}) || \
+            (apt-get update -qq && apt-get install -y --no-install-recommends ${PKGS})
           which xvfb-run
-          ls /usr/lib/x86_64-linux-gnu/dri/ 2>/dev/null | head -5
+          ldconfig -p | grep -cE "libXcursor|libXrandr" || true
 
       - name: Render testi (Xvfb + yazilim GL)
         run: |
@@ -123,19 +125,32 @@ jobs:
           CODE=$?
           set -e
           echo "RENDER_EXIT=${CODE}"
-          CLEAN=$(grep -vE "fontconfig|get_system_font_path|Unrecognized output string|Horipad|Nintendo Switch|SDL: Init OK|Orphan StringName|StringName: |XR: |libGL error" "${DIAG_LOG}" | sed -n '/\[RENDER\]/,$p')
+          CLEAN=$(grep -vE "fontconfig|get_system_font_path|Unrecognized output string|Horipad|Nintendo Switch|SDL: Init OK|Orphan StringName|StringName: |XR: " "${DIAG_LOG}" | sed -n '/\[RENDER\]/,$p')
           echo "${CLEAN}" | tail -40
 
-          # Gercekten cizim yapildi mi? (yazilim GL'de de olsa draw call > 0 olmali)
-          if echo "${CLEAN}" | grep -q "cizim=0"; then
-            echo "::error::Hicbir sey cizilmedi (draw call = 0) - render baslatilamadi"
+          # 1) Pencere/ekran surucusu acildi mi?
+          if echo "${CLEAN}" | grep -qE "Unable to create DisplayServer|all display drivers failed"; then
+            echo "::error::Ekran surucusu acilamadi (eksik sistem kutuphanesi olabilir)"
             exit 1
           fi
+          # 2) Shader/script hatasi var mi?
           if echo "${CLEAN}" | grep -qE "SHADER ERROR|Shader compilation failed|SCRIPT ERROR|Parse Error"; then
             echo "::error::Shader/script hatasi var"
             exit 1
           fi
-          echo "SONUC: render testi hatasiz ve sahne gercekten cizildi."
+          # 3) Gercekten cizim yapildi mi? [Perf] satirinda cizim>0 olmali.
+          PERF_LINE=$(echo "${CLEAN}" | grep -m1 "\[Perf\] renderer=" || true)
+          echo "PERF: ${PERF_LINE}"
+          if [ -z "${PERF_LINE}" ]; then
+            echo "::error::Perf olcumu alinamadi - oyun muhtemelen hic calismadi"
+            exit 1
+          fi
+          DRAWS=$(echo "${PERF_LINE}" | sed -n 's/.*cizim=\([0-9]*\).*/\1/p')
+          if [ -z "${DRAWS}" ] || [ "${DRAWS}" -le 0 ]; then
+            echo "::error::Hicbir sey cizilmedi (draw call=${DRAWS})"
+            exit 1
+          fi
+          echo "SONUC: sahne gercekten cizildi (${DRAWS} cizim cagrisi)."
 
       - name: Debug APK export et
         run: |
