@@ -1,3 +1,4 @@
+class_name CloudTexture
 extends RefCounted
 ## Bulutlar icin kodla uretilen (prosedurel) gurultu dokusu.
 ## Dis gorsel dosyasi yok; FastNoiseLite + Image kullanilir.

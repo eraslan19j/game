@@ -1,4 +1,6 @@
 extends Node3D
+
+const CloudTextureGen = preload("res://scripts/world/cloud_texture.gd")
 ## Kucuk Dunya - ada sahnesi.
 ##
 ## Bu script:
@@ -36,7 +38,7 @@ func _ready() -> void:
 	# Bulutlar icin prosedurel gurultu dokusu (dis gorsel yok).
 	if _clouds != null and _clouds.material_override is ShaderMaterial:
 		var cloud_mat := _clouds.material_override as ShaderMaterial
-		cloud_mat.set_shader_parameter("cloud_noise", CloudTexture.build())
+		cloud_mat.set_shader_parameter("cloud_noise", CloudTextureGen.build())
 
 	# Su, kiyi derinligini arazi dokusundan okur.
 	_water.setup(

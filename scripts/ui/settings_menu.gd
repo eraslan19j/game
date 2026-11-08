@@ -155,6 +155,11 @@ func _on_lang_pressed() -> void:
 
 
 func _refresh_texts() -> void:
+	# UI henuz kurulmadiysa (veya bir dugum eksikse) sessizce cik.
+	if _title == null or _lbl_quality == null or _close_btn == null:
+		return
+	if _quality_buttons.is_empty() or _lang_btn == null:
+		return
 	var lang := I18N.lang if I18N != null else "tr"
 	_title.text = I18N.get_string("settings") if I18N != null else "Ayarlar"
 	_lbl_quality.text = I18N.get_string("quality")
@@ -165,6 +170,8 @@ func _refresh_texts() -> void:
 	_close_btn.text = I18N.get_string("close")
 
 	var names := ["quality_low", "quality_medium", "quality_high"]
+	if I18N == null:
+		return
 	for i in _quality_buttons.size():
 		_quality_buttons[i].text = I18N.get_string(names[i])
 		_quality_buttons[i].button_pressed = (i == QualitySettings.level)
