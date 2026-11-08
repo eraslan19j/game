@@ -92,6 +92,20 @@ jobs:
           ls -lh build/android/
           test -s "build/android/$APK_NAME" || { echo "::error::APK olusmadi"; exit 1; }
 
+      - name: APK icerigini dogrula
+        run: |
+          {
+            echo "===== [INSPECT] APK icerigi ====="
+            unzip -l "build/android/$APK_NAME" | tail -20
+            echo "===== [INSPECT] yerel kutuphaneler ====="
+            unzip -l "build/android/$APK_NAME" | grep -oE 'lib/[a-z0-9_]+/[a-z0-9_.]+\.so' | sort -u
+            echo "===== [INSPECT] manifest (aapt2) ====="
+            AAPT=$(ls "${ANDROID_HOME}"/build-tools/*/aapt2 2>/dev/null | tail -1)
+            echo "aapt2=${AAPT}"
+            "${AAPT}" dump badging "build/android/$APK_NAME" 2>&1 | head -12
+          } >> "${DIAG_LOG}" 2>&1
+          sed -n '/\[INSPECT\]/,$p' "${DIAG_LOG}"
+
       - name: APK'yi artifact olarak yukle
         uses: actions/upload-artifact@v4
         with:
