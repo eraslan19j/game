@@ -60,11 +60,6 @@ void fragment() {
 	SPECULAR = 0.04;
 
 	// Kiyida daha saydam, acik denizde neredeyse opak.
-	// Su pratikte opak: sadece ada cevresindeki ince halkada yari saydam.
-	// Boylece arazinin kare tabani yari saydam suyun altindan gorunmez.
-	float alpha = 0.99;
-	if (island_dist < 95.0) {
-		alpha = mix(0.40, 0.99, smoothstep(72.0, 95.0, island_dist));
-	}
-	ALPHA = clamp(alpha, 0.0, 1.0);
+	// Su tamamen opak: altindaki arazi tabani gorunmez.
+	ALPHA = 1.0;
 }
