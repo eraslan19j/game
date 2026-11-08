@@ -2,7 +2,7 @@ shader_type spatial;
 // Stilize su: hafif dalga (vertex), yari saydam, kiyida acik renk + kopuk.
 // Derinlik tamamen GEOMETRIDEN gelir: derin bolgelerde duzlemle kamera
 // arasindaki mesafe artar. Doku okumaya bagimli degil (guvenli).
-render_mode unshaded, shadows_disabled, depth_test_disabled, cull_disabled;
+render_mode shadows_disabled;
 
 uniform vec4 shallow_color : source_color = vec4(0.30, 0.78, 0.78, 1.0);
 uniform vec4 deep_color : source_color = vec4(0.05, 0.31, 0.50, 1.0);
@@ -10,8 +10,8 @@ uniform vec4 foam_color : source_color = vec4(0.92, 0.99, 0.99, 1.0);
 uniform vec4 shore_color : source_color = vec4(0.72, 0.93, 0.90, 1.0);
 uniform float wave_speed = 1.0;
 uniform float wave_strength = 1.0;
-uniform float alpha_shallow = 0.98;
-uniform float alpha_deep = 1.0;
+uniform float alpha_shallow = 0.62;
+uniform float alpha_deep = 0.94;
 uniform float depth_near = 90.0;
 uniform float depth_far = 330.0;
 
@@ -54,12 +54,13 @@ void fragment() {
 	float foam = (1.0 - smoothstep(76.0, 84.0, island_dist)) * shore;
 	col = mix(col, foam_color.rgb, foam * 0.6);
 
-	ALBEDO = vec3(1.0, 0.0, 1.0);
+	ALBEDO = col;
 	ROUGHNESS = 0.55;
 	METALLIC = 0.0;
 	SPECULAR = 0.04;
 
 	// Kiyida daha saydam, acik denizde neredeyse opak.
-	ALPHA = 1.0;
-	// Saydamlik kapatildi: derinlik/saydamlik karisimi guvenilir calismadi.
+	float a = mix(alpha_shallow, alpha_deep, far_mix);
+	a = max(a, shore * 0.70);
+	ALPHA = clamp(a, 0.0, 1.0);
 }

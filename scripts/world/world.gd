@@ -9,9 +9,9 @@ const CloudTextureGen = preload("res://scripts/world/cloud_texture.gd")
 ##   - Kamerayi yavasca sahnenin etrafinda dondurur (3D oldugu belli olsun diye)
 
 @export var orbit_speed_deg: float = 6.0
-@export var camera_distance: float = 115.0
-@export var camera_height: float = 52.0
-@export var camera_pitch_deg: float = -26.0
+@export var camera_distance: float = 165.0
+@export var camera_height: float = 78.0
+@export var camera_pitch_deg: float = -30.0
 @export var sun_pitch_deg: float = -48.0
 @export var sun_yaw_deg: float = -42.0
 

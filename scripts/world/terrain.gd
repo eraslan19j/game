@@ -9,10 +9,10 @@ extends StaticBody3D
 
 @export var world_size: float = 200.0
 @export var grid_cells: int = 128
-@export var island_radius: float = 74.0
+@export var island_radius: float = 72.0
 @export var sea_level: float = 0.0
-@export var base_height: float = 13.0
-@export var hill_amplitude: float = 11.0
+@export var base_height: float = 5.5
+@export var hill_amplitude: float = 9.0
 @export var detail_amplitude: float = 3.0
 @export var noise_seed: int = 20261108
 @export var toon_material: Material = null
@@ -76,13 +76,13 @@ func height_at(x: float, z: float) -> float:
 	var d := Vector2(x, z).length() / maxf(island_radius, 0.001)
 	# ADA KENARI: duz plato + dik kiyi. Onceki yumusak dusus 74 m genis
 	# kayalik bir yamac olusturup suyu ufka itiyordu.
-	var falloff := smoothstep(1.0, 0.80, d)
+	var falloff := smoothstep(1.0, 0.74, d)
 
 	var big := _noise_big.get_noise_2d(x, z)
 	var small := _noise_small.get_noise_2d(x, z)
 	var h := falloff * (base_height + big * hill_amplitude + small * detail_amplitude)
 	# Kiyidan sonra hizli derinlesme: sig sahanligi yerine gercek derin su.
-	h += (falloff - 1.0) * 9.0
+	h += (falloff - 1.0) * 7.0
 	return h + sea_level
 
 
