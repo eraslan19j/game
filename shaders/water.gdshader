@@ -44,20 +44,15 @@ void vertex() {
 }
 
 void fragment() {
-	// Kamera ile bu nokta arasindaki mesafe: ada uzerinde kisa, acik denizde uzun.
-	float dist = length(world_pos - CAMERA_POSITION_WORLD);
-	// Ada merkezine uzaklik: kiyiya yakin mi?
+	// Renk, kameraya olan mesafeye DEGIL ada merkezine olan uzakliga bagli:
+	// boylece kamera donerken deniz rengi degismez (eskiden asiri parlak
+	// halkalar olusuyordu).
 	float island_dist = length(world_pos.xz);
+	vec3 col = mix(shallow_color.rgb, deep_color.rgb, smoothstep(76.0, 165.0, island_dist));
 
-	float far_mix = smoothstep(depth_near, depth_far, dist);
-	vec3 col = mix(shallow_color.rgb, deep_color.rgb, far_mix);
-
-	// Ada cevresinde genis, yumusak kiyi gecisi.
-	float shore = 1.0 - smoothstep(68.0, 108.0, island_dist);
-	col = mix(col, shallow_color.rgb, shore * 0.65);
-	// Kiyi hattinda ince kopuk halkasi.
-	float foam = 1.0 - smoothstep(74.0, 86.0, island_dist);
-	col = mix(col, foam_color.rgb, foam * 0.40);
+	// Kiyi hattinda ince kopuk cizgisi.
+	float foam = 1.0 - smoothstep(72.0, 80.0, island_dist);
+	col = mix(col, foam_color.rgb, foam * 0.5);
 
 	ALBEDO = col;
 	ROUGHNESS = 0.55;
@@ -69,5 +64,5 @@ void fragment() {
 	// kare tabani suyun ustune cizilip "kare" olarak gorunur. ALPHA yazmayinca
 	// su opak olur, derinligi yazar ve kare tamamen kaybolur.
 	//
-	// Kiyi hissi renkle veriliyor: shore + foam halkasi (yukarida).
+	// Kiyi hissi renkle veriliyor: foam halkasi (yukarida).
 }
