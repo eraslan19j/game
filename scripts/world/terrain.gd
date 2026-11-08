@@ -33,7 +33,7 @@ var _mesh_instance: MeshInstance3D
 func _ready() -> void:
 	_setup_noise()
 	var built := _build_mesh()
-	_add_collision(built)
+	_add_collision(built["mesh"])
 	_build_height_texture(built["heights"], built["n"])
 
 
@@ -158,7 +158,7 @@ func _build_mesh() -> Dictionary:
 	return {"mesh": mesh, "heights": heights, "n": n}
 
 
-func _add_collision(mesh: Mesh) -> void:
+func _add_collision(mesh: ArrayMesh) -> void:
 	var shape_node := CollisionShape3D.new()
 	shape_node.name = "Shape"
 	shape_node.shape = mesh.create_trimesh_shape()
