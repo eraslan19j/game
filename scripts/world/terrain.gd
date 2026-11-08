@@ -178,7 +178,7 @@ func _build_mesh() -> Dictionary:
 	# su yuzeyiyle derinlik catismasi yasaniyor ve goruntude belirgin bir KARE
 	# olusuyordu. Sadece adanin kendisi cizilince boyle bir yuzey kalmiyor;
 	# su zaten her yeri kapliyor. Kiyi hatti da daha dogal gorunuyor.
-	const SEA_CULL: float = -1.2
+	const SEA_CULL: float = -4.5
 	# Once hangi karelerin uretilecegine karar ver. Sonra kesim sinirindaki
 	# (deniz alti komsusu olan) kose noktalarini su seviyesine indir: boylece
 	# kiyi hatti duzgun bir cizgi olur, testere disi kalmaz.
@@ -214,15 +214,11 @@ func _build_mesh() -> Dictionary:
 	# Kesim kenarini DUZGUN BIR DAIREYE oturt: aksi halde grid hucrelerinden
 	# dolayi kiyida testere disi (zikzak) olusur. Kenar noktalari, ada
 	# merkezinden bakildiginda sabit yaricapli bir cember uzerine cekilir.
-	var edge_radius: float = island_radius + 10.0
 	for iz in n:
 		for ix in n:
 			if edge_vert[iz * n + ix] == 1:
 				var v: Vector3 = verts[iz * n + ix]
-				var r: float = sqrt(v.x * v.x + v.z * v.z)
-				if r > 0.001 and r > edge_radius:
-					var k2: float = edge_radius / r
-					verts[iz * n + ix] = Vector3(v.x * k2, -1.4, v.z * k2)
+				verts[iz * n + ix] = Vector3(v.x, -5.0, v.z)
 
 	var indices := PackedInt32Array()
 	indices.resize(grid_cells * grid_cells * 6)
