@@ -59,10 +59,10 @@ void fragment() {
 	float foam = 1.0 - smoothstep(0.0, 0.22, depth);
 	col = mix(col, foam_color.rgb, foam * 0.7);
 
-	ALBEDO = col;
-	ROUGHNESS = 0.12;
+	ALBEDO = col * 0.96;
+	ROUGHNESS = 0.52;
 	METALLIC = 0.0;
-	SPECULAR = 0.45;
+	SPECULAR = 0.04;
 	ALPHA = mix(alpha_shallow, alpha_deep, deep_mix) + foam * 0.15;
 	ALPHA = clamp(ALPHA, 0.0, 1.0);
 

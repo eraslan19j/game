@@ -200,13 +200,13 @@ func _build_height_texture(heights: PackedFloat32Array, n: int) -> void:
 
 ## Cizgi film havasi icin yukseklik/egime gore sabit renkler.
 func _color_for(h: float, normal_y: float) -> Color:
-	var deep_sand := Color(0.55, 0.48, 0.35)
+	var deep_sand := Color(0.34, 0.33, 0.27)
 	var sand := Color(0.87, 0.78, 0.55)
 	var grass_low := Color(0.31, 0.58, 0.24)
 	var grass_high := Color(0.52, 0.72, 0.29)
 	var rock := Color(0.63, 0.58, 0.53)
 
-	if h < sea_level - 0.6:
+	if h < sea_level - 1.5:
 		return deep_sand
 	if h < sea_level + 1.0:
 		return sand.lerp(deep_sand, 0.25)
