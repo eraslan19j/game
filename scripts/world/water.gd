@@ -7,8 +7,10 @@ extends MeshInstance3D
 ##
 ## Doku ve parametreler `setup()` ile dunya scriptinden verilir.
 
-@export var size: float = 14000.0
-@export var subdivisions: int = 90
+# Su duzlemi: ada cevresinde yeterince sik olmali, yoksa kiyi hattinda
+# testere disi olusur (14 000 m / 90 parca = 155 m'lik dev ucgenler).
+@export var size: float = 3600.0
+@export var subdivisions: int = 150
 @export var wave_strength: float = 1.0
 @export var wave_speed: float = 1.0
 

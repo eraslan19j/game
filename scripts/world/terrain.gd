@@ -314,7 +314,7 @@ func _color_for(h: float, normal_y: float) -> Color:
 	var sand := Color(0.82, 0.72, 0.48)
 	var grass_low := Color(0.20, 0.46, 0.16)
 	var grass_high := Color(0.36, 0.60, 0.20)
-	var rock := Color(0.52, 0.48, 0.44)
+	var rock := Color(0.45, 0.43, 0.40)
 
 	if h < sea_level - 3.0:
 		return seabed
@@ -322,8 +322,9 @@ func _color_for(h: float, normal_y: float) -> Color:
 		return seabed.lerp(seabed_shallow, clampf((h - (sea_level - 3.0)) / 2.8, 0.0, 1.0))
 	if h < sea_level + 1.0:
 		return seabed_shallow.lerp(sand, clampf((h - (sea_level - 0.2)) / 1.2, 0.0, 1.0))
-	# Dik kiyi yamaci: kum -> kaya karisimi (gri kitle olusmasin).
-	if normal_y < 0.80:
-		return sand.lerp(rock, 0.35)
+	# Sadece GERCEKTEN dik yamaclarda kaya rengi (eskiden 0.80 idi ve butun
+	# tepeler kumlu lekeler gibi gorunuyordu).
+	if normal_y < 0.60:
+		return sand.lerp(rock, 0.55)
 	var t: float = clampf((h - (sea_level + 1.0)) / 16.0, 0.0, 1.0)
 	return grass_low.lerp(grass_high, t)

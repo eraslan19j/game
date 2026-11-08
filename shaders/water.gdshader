@@ -27,12 +27,16 @@ float wave_height(vec2 p, float t) {
 
 void vertex() {
 	float t = TIME * wave_speed;
-	float h0 = wave_height(VERTEX.xz, t);
+	// Dalgalar kiyiya yakinken soner: boylece ada ile suyun bulusma hatti
+	// duzgun bir cizgi olur (dalga yuzunden testere disi olusmaz).
+	float world_r = length((MODEL_MATRIX * vec4(VERTEX, 1.0)).xz);
+	float damp = smoothstep(78.0, 150.0, world_r);
+	float h0 = wave_height(VERTEX.xz, t) * damp;
 	VERTEX.y += h0;
 
 	float e = 0.9;
-	float hx = wave_height(VERTEX.xz + vec2(e, 0.0), t);
-	float hz = wave_height(VERTEX.xz + vec2(0.0, e), t);
+	float hx = wave_height(VERTEX.xz + vec2(e, 0.0), t) * damp;
+	float hz = wave_height(VERTEX.xz + vec2(0.0, e), t) * damp;
 	vec3 n = normalize(vec3(-(hx - h0) / e, 1.0, -(hz - h0) / e));
 	NORMAL = normalize(mix(NORMAL, n, 0.75));
 
