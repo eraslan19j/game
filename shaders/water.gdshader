@@ -12,7 +12,7 @@ uniform float wave_strength = 1.0;
 uniform vec4 shallow_color : source_color = vec4(0.24, 0.72, 0.72, 1.0);
 uniform vec4 deep_color : source_color = vec4(0.05, 0.30, 0.47, 1.0);
 uniform vec4 foam_color : source_color = vec4(0.95, 0.99, 0.99, 1.0);
-uniform float alpha_shallow = 0.62;
+uniform float alpha_shallow = 0.78;
 uniform float alpha_deep = 0.96;
 
 varying vec3 world_pos;
@@ -57,11 +57,11 @@ void fragment() {
 	float foam = 1.0 - smoothstep(0.0, 0.22, depth);
 	col = mix(col, foam_color.rgb, foam * 0.7);
 
-	ALBEDO = vec3(clamp(depth / 20.0, 0.0, 1.0), clamp(th / 20.0 + 0.5, 0.0, 1.0), 0.0);
+	ALBEDO = col * 0.96;
 	ROUGHNESS = 0.52;
 	METALLIC = 0.0;
 	SPECULAR = 0.04;
-	ALPHA = 1.0;
+	ALPHA = mix(alpha_shallow, alpha_deep, deep_mix) + foam * 0.15;
 	ALPHA = clamp(ALPHA, 0.0, 1.0);
 
 	// Hafif isilti (gunes parlamasi) icin normali kullaniyoruz; ekstra efekt yok.
