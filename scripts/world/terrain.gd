@@ -173,7 +173,8 @@ func _build_mesh() -> Dictionary:
 	_mesh_instance = MeshInstance3D.new()
 	_mesh_instance.name = "Mesh"
 	_mesh_instance.mesh = mesh
-	_mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	# Arazi golge dussun = KAPALI (200x200 m duz levha suya dev golge dusuruyordu).
+	_mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(_mesh_instance)
 
 	return {"mesh": mesh, "heights": heights, "n": n}
