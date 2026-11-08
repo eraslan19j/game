@@ -41,12 +41,13 @@ func _ready() -> void:
 		cloud_mat.set_shader_parameter("cloud_noise", CloudTextureGen.build())
 
 	# Su, kiyi derinligini arazi dokusundan okur.
-	_water.setup(
-		_terrain.height_texture,
-		_terrain.world_size,
-		_terrain.height_min,
-		_terrain.height_max
-	)
+	if _water.has_method("setup"):
+		_water.setup(
+			_terrain.height_texture,
+			_terrain.world_size,
+			_terrain.height_min,
+			_terrain.height_max
+		)
 
 
 func _process(delta: float) -> void:
