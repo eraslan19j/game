@@ -15,13 +15,6 @@ uniform float island_mask_radius = 0.0;
 uniform float sea_level = 0.0;
 
 void fragment() {
-	// Ada maskesi: 200x200 m kare tabanin izini kaldirir.
-	if (island_mask_radius > 0.5) {
-		float r = length(VERTEX.xz);
-		if (r > island_mask_radius && VERTEX.y < sea_level + 0.3) {
-			discard;
-		}
-	}
 	vec3 base = albedo.rgb;
 	if (use_vertex_color) {
 		base *= COLOR.rgb;

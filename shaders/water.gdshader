@@ -60,6 +60,11 @@ void fragment() {
 	SPECULAR = 0.04;
 
 	// Kiyida daha saydam, acik denizde neredeyse opak.
-	// Su tamamen opak: altindaki arazi tabani gorunmez.
-	ALPHA = 1.0;
+	// Ada uzerinde tamamen saydam (arazi gorunur), uzakta opak
+	// (arazinin 200x200 m kare tabaninin izi kapanir).
+	float alpha = 1.0;
+	if (island_dist < 135.0) {
+		alpha = smoothstep(96.0, 132.0, island_dist) * 0.92;
+	}
+	ALPHA = clamp(alpha, 0.0, 1.0);
 }
