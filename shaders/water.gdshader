@@ -10,8 +10,8 @@ uniform vec4 foam_color : source_color = vec4(0.92, 0.99, 0.99, 1.0);
 uniform vec4 shore_color : source_color = vec4(0.72, 0.93, 0.90, 1.0);
 uniform float wave_speed = 1.0;
 uniform float wave_strength = 1.0;
-uniform float alpha_shallow = 0.55;
-uniform float alpha_deep = 0.95;
+uniform float alpha_shallow = 0.98;
+uniform float alpha_deep = 1.0;
 uniform float depth_near = 90.0;
 uniform float depth_far = 330.0;
 
