@@ -53,8 +53,6 @@ shader_parameter/rim_tint = Color(1, 0.93, 0.78, 1)
 shader_parameter/rim_strength = 0.2
 shader_parameter/roughness_value = 0.95
 shader_parameter/brightness = 0.92
-shader_parameter/island_mask_radius = 99.5
-shader_parameter/sea_level = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_clouds"]
 shader = ExtResource("6_clouds")
