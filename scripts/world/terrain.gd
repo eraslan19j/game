@@ -179,6 +179,45 @@ func _build_mesh() -> Dictionary:
 	# olusuyordu. Sadece adanin kendisi cizilince boyle bir yuzey kalmiyor;
 	# su zaten her yeri kapliyor. Kiyi hatti da daha dogal gorunuyor.
 	const SEA_CULL: float = -2.6
+	# Once hangi karelerin uretilecegine karar ver. Sonra kesim sinirindaki
+	# (deniz alti komsusu olan) kose noktalarini su seviyesine indir: boylece
+	# kiyi hatti duzgun bir cizgi olur, testere disi kalmaz.
+	var keep: PackedByteArray = PackedByteArray()
+	keep.resize(grid_cells * grid_cells)
+	var edge_vert: PackedByteArray = PackedByteArray()
+	edge_vert.resize(n * n)
+	for iz in grid_cells:
+		for ix in grid_cells:
+			var i0: int = iz * n + ix
+			var i1: int = i0 + 1
+			var i2: int = i0 + n
+			var i3: int = i2 + 1
+			var inside: bool = not (heights[i0] < SEA_CULL and heights[i1] < SEA_CULL \
+					and heights[i2] < SEA_CULL and heights[i3] < SEA_CULL)
+			keep[iz * grid_cells + ix] = 1 if inside else 0
+	for iz in grid_cells:
+		for ix in grid_cells:
+			if keep[iz * grid_cells + ix] == 0:
+				continue
+			var i0: int = iz * n + ix
+			var i2: int = i0 + n
+			var neigh: Array = []
+			if ix > 0: neigh.append(keep[iz * grid_cells + (ix - 1)])
+			if ix < grid_cells - 1: neigh.append(keep[iz * grid_cells + (ix + 1)])
+			if iz > 0: neigh.append(keep[(iz - 1) * grid_cells + ix])
+			if iz < grid_cells - 1: neigh.append(keep[(iz + 1) * grid_cells + ix])
+			if neigh.has(0):
+				edge_vert[i0] = 1
+				edge_vert[i0 + 1] = 1
+				edge_vert[i2] = 1
+				edge_vert[i2 + 1] = 1
+	for iz in n:
+		for ix in n:
+			if edge_vert[iz * n + ix] == 1:
+				var v: Vector3 = verts[iz * n + ix]
+				if v.y > -0.6:
+					verts[iz * n + ix] = Vector3(v.x, -0.6, v.z)
+
 	var indices := PackedInt32Array()
 	indices.resize(grid_cells * grid_cells * 6)
 	var k: int = 0
@@ -188,12 +227,10 @@ func _build_mesh() -> Dictionary:
 			var i1: int = i0 + 1
 			var i2: int = i0 + n
 			var i3: int = i2 + 1
-			# Denizin altindaki kareler uretilmez. Kiyi hattinda kucuk bir
-			# "etek" birakilir (SEA_CULL): boylece ada havada yuzuyormus gibi
-			# durmaz, su altinda devam ediyormus gibi gorunur. Etek deniz
-			# tabaninin rengine boyali oldugu icin kare izlenimi olusmaz.
-			if heights[i0] < SEA_CULL and heights[i1] < SEA_CULL \
-					and heights[i2] < SEA_CULL and heights[i3] < SEA_CULL:
+			# Denizin altindaki kareler uretilmez (yukarida keep[] ile
+			# isaretlendi). Kiyi hattinda kucuk bir "etek" birakilir: ada
+			# havada yuzuyormus gibi durmaz. Etek deniz tabani renginde.
+			if keep[iz * grid_cells + ix] == 0:
 				continue
 			# Saat yonunun tersi (yukari bakan yuz): ConcavePolygonShape3D
 			# tek tarafli oldugu icin yon onemli — yanlissa isin/carpisma gecmez.
