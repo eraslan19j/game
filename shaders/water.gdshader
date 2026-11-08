@@ -57,11 +57,11 @@ void fragment() {
 	float foam = 1.0 - smoothstep(0.0, 0.22, depth);
 	col = mix(col, foam_color.rgb, foam * 0.7);
 
-	ALBEDO = col * 0.96;
+	ALBEDO = vec3(clamp(depth / 20.0, 0.0, 1.0), clamp(th / 20.0 + 0.5, 0.0, 1.0), 0.0);
 	ROUGHNESS = 0.52;
 	METALLIC = 0.0;
 	SPECULAR = 0.04;
-	ALPHA = mix(alpha_shallow, alpha_deep, deep_mix) + foam * 0.15;
+	ALPHA = 1.0;
 	ALPHA = clamp(ALPHA, 0.0, 1.0);
 
 	// Hafif isilti (gunes parlamasi) icin normali kullaniyoruz; ekstra efekt yok.
