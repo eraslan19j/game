@@ -3,8 +3,9 @@
 Küçük ölçekli, **3D keşif ve fotoğraf çekme** macerası. Savaş yok.
 Sıcak, renkli bir görsel dil hedefliyor. Godot 4 (GDScript) ile geliştiriliyor, Android'e çıkar.
 
-> Durum: **Aşama 1 — İskelet.** Şu an sadece test sahnesi var (zemin, gökyüzü, güneş, dönen kamera).
-> Yürüme, fotoğraf çekme gibi özellikler sonraki adımlarda eklenecek.
+> Durum: **Aşama 2 — Ada.** 200×200 m'lik, noise ile üretilen yumuşak tepeli/vadili küçük bir ada;
+> etrafı stilize su ile çevrili. Zemin çarpışmalı (karakter üzerinde yürüyebilir).
+> Kamera otomatik dönüyor. Yürüme ve fotoğraf çekme sonraki adımlarda eklenecek.
 
 ---
 
@@ -19,10 +20,14 @@ game/
 ├─ CREDITS.md               ← Dış görsel/ses kaynakları ve lisansları
 ├─ scenes/
 │  └─ world/
-│     └─ world.tscn         ← Açılış sahnesi: zemin, gökyüzü, güneş, kamera, birkaç ağaç
+│     └─ world.tscn         ← Açılış sahnesi: ada, su, gökyüzü, güneş, kamera
+├─ shaders/
+│  └─ water.gdshader        ← Stilize su (dalga, yarı saydamlık, kıyı rengi)
 ├─ scripts/
 │  └─ world/
-│     └─ world.gd            ← Sahneyi canlandıran script
+│     ├─ world.gd            ← Sahneyi canlandıran script (güneş, kamera, su bağlantısı)
+│     ├─ terrain.gd          ← Ada arazi üretimi (noise + çarpışma + renkler)
+│     └─ water.gd            ← Su yüzeyi
 └─ .github/workflows/
    └─ android-debug.yml      ← Her push'ta APK derleyen otomatik hat
 ```
