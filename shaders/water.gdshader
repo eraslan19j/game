@@ -5,7 +5,7 @@ shader_type spatial;
 render_mode shadows_disabled, fog_disabled;
 
 uniform vec4 shallow_color : source_color = vec4(0.05, 0.22, 0.36, 1.0);
-uniform vec4 deep_color : source_color = vec4(0.04, 0.17, 0.30, 1.0);
+uniform vec4 deep_color : source_color = vec4(0.05, 0.20, 0.34, 1.0);
 uniform vec4 foam_color : source_color = vec4(0.92, 0.99, 0.99, 1.0);
 uniform vec4 shore_color : source_color = vec4(0.72, 0.93, 0.90, 1.0);
 uniform float wave_speed = 1.0;
@@ -48,7 +48,9 @@ void fragment() {
 	// boylece kamera donerken deniz rengi degismez (eskiden asiri parlak
 	// halkalar olusuyordu).
 	float island_dist = length(world_pos.xz);
-	vec3 col = mix(shallow_color.rgb, deep_color.rgb, smoothstep(74.0, 96.0, island_dist));
+	// TEK DUZ RENK: gradyan/halka yok. Onceki surumlerde olusan parlak
+	// halka tamamen kaldirildi (ton eslemesi + gradyan birlesimi).
+	vec3 col = deep_color.rgb;
 
 	// Kiyi hattinda ince kopuk cizgisi.
 	float foam = 1.0 - smoothstep(70.0, 76.0, island_dist);
