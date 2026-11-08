@@ -35,8 +35,8 @@ tonemap_exposure = 1.0
 tonemap_white = 6.0
 fog_enabled = true
 fog_light_color = Color(0.60, 0.78, 0.86, 1)
-fog_light_energy = 0.55
-fog_density = 0.0005
+fog_light_energy = 0.35
+fog_density = 0.00016
 fog_sky_affect = 0.0
 fog_aerial_perspective = 0.0
 
@@ -58,11 +58,11 @@ shader_parameter/brightness = 0.92
 shader = ExtResource("6_clouds")
 shader_parameter/cloud_color = Color(1, 1, 1, 1)
 shader_parameter/cloud_shade = Color(0.86, 0.89, 0.96, 1)
-shader_parameter/coverage = 0.46
+shader_parameter/coverage = 0.62
 shader_parameter/softness = 0.22
 shader_parameter/speed = 0.006
 shader_parameter/tiling = 2.0
-shader_parameter/alpha_scale = 0.92
+shader_parameter/alpha_scale = 0.55
 shader_parameter/warp = 0.35
 
 [sub_resource type="SphereMesh" id="SphereMesh_clouds"]
