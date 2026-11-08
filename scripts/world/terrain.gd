@@ -8,7 +8,7 @@ extends StaticBody3D
 ## - Su icin: yukseklikleri kucuk bir dokuya yazip su shader'ina verir
 
 @export var world_size: float = 200.0
-@export var grid_cells: int = 128
+@export var grid_cells: int = 176
 @export var island_radius: float = 72.0
 @export var sea_level: float = 0.0
 @export var base_height: float = 5.5
