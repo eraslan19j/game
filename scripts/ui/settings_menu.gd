@@ -11,7 +11,6 @@ var _title: Label
 var _lbl_quality: Label
 var _lbl_hint: Label
 var _lbl_time: Label
-var _lbl_fps: Label
 var _lbl_lang: Label
 var _close_btn: Button
 var _lang_btn: Button
@@ -166,7 +165,6 @@ func _refresh_texts() -> void:
 	_lbl_hint.text = I18N.get_string("quality_hint")
 	_lbl_time.text = I18N.get_string("time_of_day")
 	_lbl_lang.text = I18N.get_string("language")
-	_lbl_fps.text = I18N.get_string("fps")
 	_close_btn.text = I18N.get_string("close")
 
 	var names := ["quality_low", "quality_medium", "quality_high"]
