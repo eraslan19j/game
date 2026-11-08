@@ -7,6 +7,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-apk:
     name: Debug APK derle
@@ -18,6 +21,7 @@ jobs:
       GODOT_VERSION: "4.5.2"
       EXPORT_PRESET: "Android Debug"
       APK_NAME: "kucuk-dunya-debug.apk"
+      DIAG_LOG: "/tmp/export.log"
 
     steps:
       - name: Depoyu indir
@@ -27,6 +31,7 @@ jobs:
       # root olmadigi icin bunlari kendi ev dizinine tasiyoruz.
       - name: Godot export template'lerini hazirla
         run: |
+          set -x
           mkdir -v -p ~/.local/share/godot/export_templates
           mkdir -v -p ~/.config
           if [ -d /root/.config/godot ] && [ ! -d ~/.config/godot ]; then
@@ -36,24 +41,39 @@ jobs:
           if [ -d "$SRC" ]; then
             cp -a "$SRC" ~/.local/share/godot/export_templates/
           fi
-          echo "--- yuklenen export template'leri ---"
-          ls -1 ~/.local/share/godot/export_templates/ || true
+          {
+            echo "### godot --version"
+            godot --version
+            echo "### export templates"
+            ls -1 ~/.local/share/godot/export_templates/ || true
+            ls -1 ~/.local/share/godot/export_templates/*/ | head -40 || true
+            echo "### editor settings"
+            ls -1 ~/.config/godot/ || true
+            cat ~/.config/godot/editor_settings-*.tres 2>/dev/null || true
+            echo "### android sdk"
+            echo "ANDROID_HOME=${ANDROID_HOME:-yok}"
+            ls -1 "${ANDROID_HOME:-/usr/lib/android-sdk}" 2>/dev/null || true
+            echo "### java"
+            java -version 2>&1 || true
+          } > "${DIAG_LOG}" 2>&1
+          cat "${DIAG_LOG}"
 
       # Ilk acilista Godot import eder (.godot klasoru olusur). Bu adim olmadan
       # export bazen bos/kirik pck uretir, o yuzden acikca yapiyoruz.
       - name: Projeyi ice aktar
         run: |
-          godot --headless --editor --quit --path . || godot --headless --import --path .
+          godot --headless --editor --quit --path . 2>&1 | tee -a "${DIAG_LOG}" || godot --headless --import --path . 2>&1 | tee -a "${DIAG_LOG}"
 
       - name: Debug APK export et
         run: |
+          set -o pipefail
           mkdir -v -p build/android
-          godot --headless --verbose --export-debug "$EXPORT_PRESET" "$(readlink -f build/android)/$APK_NAME" --path .
+          godot --headless --verbose --export-debug "$EXPORT_PRESET" "$(readlink -f build/android)/$APK_NAME" --path . 2>&1 | tee -a "${DIAG_LOG}"
 
       - name: APK gercekten olustu mu kontrol et
         run: |
-          ls -lh build/android/
-          test -s "build/android/$APK_NAME" || { echo "HATA: APK olusmadi"; exit 1; }
+          ls -lh build/android/ | tee -a "${DIAG_LOG}"
+          test -s "build/android/$APK_NAME" || { echo "HATA: APK olusmadi" | tee -a "${DIAG_LOG}"; exit 1; }
 
       - name: APK'yi artifact olarak yukle
         uses: actions/upload-artifact@v4
@@ -62,3 +82,21 @@ jobs:
           path: build/android/${{ env.APK_NAME }}
           if-no-files-found: error
           retention-days: 30
+
+      # Log indirme servisi bazi ortamlardan erisilemedigi icin, derleme
+      # basarisiz olursa tanilama logunu bir dala yaziyoruz.
+      - name: Hata tanilama logunu yaz (sadece basarisizlikta)
+        if: failure()
+        run: |
+          set -x
+          mkdir -p /tmp/logrepo && cd /tmp/logrepo
+          git init -q
+          git config user.name "ci-diagnostics"
+          git config user.email "ci@localhost"
+          cp "${DIAG_LOG}" ./export.log
+          git checkout -q -b ci-logs
+          git add export.log
+          git commit -q -m "CI tanilama logu: $(date -u +%Y-%m-%dT%H:%M:%SZ)" || true
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci-logs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
