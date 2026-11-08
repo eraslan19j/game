@@ -37,10 +37,10 @@ func _build_ui() -> void:
 
 	# --- Ayar butonu (sol ust) ---
 	var gear := Button.new()
-	gear.text = "⚙"
+	gear.text = "AYAR"
 	gear.name = "GearButton"
-	gear.add_theme_font_size_override("font_size", 34)
-	gear.custom_minimum_size = Vector2(72, 72)
+	gear.add_theme_font_size_override("font_size", 22)
+	gear.custom_minimum_size = Vector2(104, 64)
 	gear.position = Vector2(18, 18)
 	gear.tooltip_text = "Ayarlar"
 	gear.pressed.connect(toggle)

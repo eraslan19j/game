@@ -31,7 +31,8 @@ void fragment() {
 	vec3 col = mix(cloud_shade.rgb, cloud_color.rgb, smoothstep(0.15, 0.75, a));
 
 	ALBEDO = col;
-	ALPHA = a * alpha_scale * mix(1.0, 0.55, v * 0.0);
-	// Ufka yaklastikca hafifce solsun.
-	ALPHA *= mix(0.35, 1.0, smoothstep(0.0, 0.35, v));
+	ALPHA = a * alpha_scale;
+	// Ufka yaklastikca solsun (sert bant olusmasin).
+	float horizon_fade = smoothstep(0.02, 0.30, v);
+	ALPHA *= horizon_fade * (1.0 - smoothstep(0.72, 1.0, v) * 0.85);
 }

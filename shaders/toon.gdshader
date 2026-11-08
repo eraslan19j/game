@@ -32,5 +32,5 @@ void light() {
 	float q = floor(wrapped * bands + 0.5) / bands;
 	q = clamp(q, 0.12, 1.0);
 	vec3 tint = mix(shade_tint.rgb, vec3(1.0, 1.0, 1.0), smoothstep(0.2, 0.95, q));
-	DIFFUSE_LIGHT += tint * LIGHT_COLOR * ATTENUATION * q / PI;
+	DIFFUSE_LIGHT += tint * LIGHT_COLOR * ATTENUATION * q * 0.82 / PI;
 }
