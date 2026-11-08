@@ -304,7 +304,7 @@ func _build_sand() -> void:
 # --------------------------------------------------------------- MultiMesh
 
 ## Ornekleri tek MultiMesh'te birlestirir. Donus: olusan MeshInstance3D.
-func _add_multimesh(node_name: String, mesh: ArrayMesh, items: Array,
+func _add_multimesh(node_name: String, mesh: Mesh, items: Array,
 		material: ShaderMaterial) -> MultiMeshInstance3D:
 	if items.is_empty():
 		return null
