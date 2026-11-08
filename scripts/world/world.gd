@@ -65,6 +65,32 @@ func _verify_collision() -> void:
 			print("[Collision] (%.0f, %.0f) -> CARPISMA YOK" % [p.x, p.y])
 	print("[Collision] sonuc: %d/%d nokta carpisti" % [hits, tested])
 
+	# --- Teshis: sekil gercekten olustu mu? ---
+	var shape_node := _terrain.get_node_or_null("Shape") as CollisionShape3D
+	if shape_node == null:
+		print("[Diag] Terrain altinda Shape dugumu YOK")
+	else:
+		var sh := shape_node.shape
+		print("[Diag] shape=%s disabled=%s parent=%s" % [
+			"null" if sh == null else sh.get_class(), shape_node.disabled, shape_node.get_parent().name])
+		if sh is ConcavePolygonShape3D:
+			print("[Diag] trimesh yuzey sayisi=%d" % (sh as ConcavePolygonShape3D).get_faces().size())
+	print("[Diag] Terrain cocuklari: %s" % [str(_terrain.get_children())])
+
+	# --- Teshis: isin sistemi bu sahnede calisiyor mu? (basit kutu) ---
+	var probe := StaticBody3D.new()
+	var probe_shape := CollisionShape3D.new()
+	probe_shape.shape = BoxShape3D.new()
+	probe.add_child(probe_shape)
+	probe.position = Vector3(0, 60, 0)
+	add_child(probe)
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	var q2 := PhysicsRayQueryParameters3D.create(Vector3(0, 200, 0), Vector3(0, -200, 0))
+	var h2 := get_world_3d().direct_space_state.intersect_ray(q2)
+	print("[Diag] test kutusu isini: %s" % ("CARPISTI y=%.2f" % h2["position"].y if not h2.is_empty() else "CARPISMADI"))
+	probe.queue_free()
+
 
 func _process(delta: float) -> void:
 	if orbit_speed_deg != 0.0:
