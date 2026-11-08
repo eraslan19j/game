@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/world.gd" id="1_world"]
 [ext_resource type="Script" path="res://scripts/world/terrain.gd" id="2_terrain"]
@@ -42,6 +42,9 @@ fog_aerial_perspective = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
 shader = ExtResource("4_watershader")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_watertest"]
+albedo_color = Color(0.05, 0.35, 0.75, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_toon_ground"]
 shader = ExtResource("5_toon")
@@ -100,8 +103,7 @@ script = ExtResource("2_terrain")
 toon_material = SubResource("ShaderMaterial_toon_ground")
 
 [node name="Water" type="MeshInstance3D" parent="."]
-material_override = SubResource("ShaderMaterial_water")
-script = ExtResource("3_water")
+material_override = SubResource("StandardMaterial3D_watertest")
 
 [node name="CameraRig" type="Node3D" parent="."]
 
