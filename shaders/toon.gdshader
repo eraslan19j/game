@@ -10,8 +10,18 @@ uniform vec4 rim_tint : source_color = vec4(1.0, 0.93, 0.78, 1.0);
 uniform float rim_strength = 0.22;
 uniform float roughness_value = 0.95;
 uniform float brightness = 1.0;
+// Arazi icin: ada disindaki (uzak + su alti) kisimlari kirp.
+uniform float island_mask_radius = 0.0;
+uniform float sea_level = 0.0;
 
 void fragment() {
+	// Ada maskesi: 200x200 m kare tabanin izini kaldirir.
+	if (island_mask_radius > 0.5) {
+		float r = length(VERTEX.xz);
+		if (r > island_mask_radius && VERTEX.y < sea_level + 0.3) {
+			discard;
+		}
+	}
 	vec3 base = albedo.rgb;
 	if (use_vertex_color) {
 		base *= COLOR.rgb;
