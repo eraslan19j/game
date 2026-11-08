@@ -1,4 +1,5 @@
 shader_type spatial;
+render_mode shadows_disabled;
 // Stilize su: hafif dalga (vertex), yari saydam, kiyida acik renk + kopuk.
 // Arazi yukseklik dokusu R kanalinda 0..1 olarak gelir.
 
@@ -8,11 +9,11 @@ uniform float height_min = -30.0;
 uniform float height_max = 45.0;
 uniform float wave_speed = 1.0;
 uniform float wave_strength = 1.0;
-uniform vec4 shallow_color : source_color = vec4(1.0, 0.0, 1.0, 1.0);
-uniform vec4 deep_color : source_color = vec4(1.0, 0.0, 0.0, 1.0);
-uniform vec4 foam_color : source_color = vec4(0.0, 1.0, 0.0, 1.0);
-uniform float alpha_shallow = 1.0;
-uniform float alpha_deep = 1.0;
+uniform vec4 shallow_color : source_color = vec4(0.24, 0.72, 0.72, 1.0);
+uniform vec4 deep_color : source_color = vec4(0.05, 0.30, 0.47, 1.0);
+uniform vec4 foam_color : source_color = vec4(0.95, 0.99, 0.99, 1.0);
+uniform float alpha_shallow = 0.62;
+uniform float alpha_deep = 0.96;
 
 varying vec3 world_pos;
 
