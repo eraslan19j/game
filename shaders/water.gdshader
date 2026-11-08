@@ -49,10 +49,10 @@ void fragment() {
 	vec3 col = mix(shallow_color.rgb, deep_color.rgb, far_mix);
 
 	// Ada cevresinde ince acik kiyi halkasi.
-	float shore = 1.0 - smoothstep(72.0, 96.0, island_dist);
-	col = mix(col, shore_color.rgb, shore * 0.55);
-	float foam = (1.0 - smoothstep(76.0, 84.0, island_dist)) * shore;
-	col = mix(col, foam_color.rgb, foam * 0.6);
+	float shore = 1.0 - smoothstep(70.0, 150.0, island_dist);
+	col = mix(col, shallow_color.rgb, shore * 0.85);
+	float foam = 1.0 - smoothstep(70.0, 80.0, island_dist);
+	col = mix(col, foam_color.rgb, foam * 0.75);
 
 	ALBEDO = col;
 	ROUGHNESS = 0.55;
@@ -60,11 +60,11 @@ void fragment() {
 	SPECULAR = 0.04;
 
 	// Kiyida daha saydam, acik denizde neredeyse opak.
-	// Ada uzerinde tamamen saydam (arazi gorunur), uzakta opak
-	// (arazinin 200x200 m kare tabaninin izi kapanir).
+	// Sadece adanin uzerinde saydam (arazi gorunur). Ada disinda TAM opak:
+	// boylece arazinin 200x200 m kare tabani suyun altindan gorunmez.
 	float alpha = 1.0;
-	if (island_dist < 135.0) {
-		alpha = smoothstep(96.0, 132.0, island_dist) * 0.92;
+	if (island_dist < 80.0) {
+		alpha = smoothstep(64.0, 80.0, island_dist);
 	}
 	ALPHA = clamp(alpha, 0.0, 1.0);
 }

@@ -64,7 +64,7 @@ shader_parameter/coverage = 0.72
 shader_parameter/softness = 0.22
 shader_parameter/speed = 0.006
 shader_parameter/tiling = 2.0
-shader_parameter/alpha_scale = 0.20
+shader_parameter/alpha_scale = 0.12
 shader_parameter/warp = 0.35
 
 [sub_resource type="SphereMesh" id="SphereMesh_clouds"]
