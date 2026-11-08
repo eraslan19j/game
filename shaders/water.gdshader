@@ -60,7 +60,6 @@ void fragment() {
 	SPECULAR = 0.04;
 
 	// Kiyida daha saydam, acik denizde neredeyse opak.
-	float a = mix(alpha_shallow, alpha_deep, far_mix);
-	a = max(a, shore * 0.75);
-	ALPHA = clamp(a, 0.0, 1.0);
+	ALPHA = 1.0;
+	// Saydamlik kapatildi: derinlik/saydamlik karisimi guvenilir calismadi.
 }
