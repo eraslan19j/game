@@ -16,6 +16,11 @@ run/main_scene="res://scenes/world/world.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+QualitySettings="*res://scripts/world/quality_settings.gd"
+I18N="*res://scripts/ui/i18n.gd"
+
 [display]
 
 window/size/viewport_width=1280

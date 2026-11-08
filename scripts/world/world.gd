@@ -16,6 +16,7 @@ extends Node3D
 @onready var _sun: DirectionalLight3D = $Sun
 @onready var _terrain: StaticBody3D = $Terrain
 @onready var _water: MeshInstance3D = $Water
+@onready var _clouds: MeshInstance3D = $Clouds
 @onready var _camera_rig: Node3D = $CameraRig
 @onready var _camera: Camera3D = $CameraRig/Camera3D
 
@@ -31,6 +32,11 @@ func _ready() -> void:
 		camera_basis,
 		Vector3(0.0, camera_height, camera_distance)
 	)
+
+	# Bulutlar icin prosedurel gurultu dokusu (dis gorsel yok).
+	if _clouds != null and _clouds.material_override is ShaderMaterial:
+		var cloud_mat := _clouds.material_override as ShaderMaterial
+		cloud_mat.set_shader_parameter("cloud_noise", CloudTexture.build())
 
 	# Su, kiyi derinligini arazi dokusundan okur.
 	_water.setup(

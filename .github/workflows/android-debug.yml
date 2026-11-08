@@ -97,6 +97,27 @@ jobs:
           echo "SONUC: oyun hatasiz acildi."
           grep -E "Terrain|ada|arazi|height_texture|Water" "${DIAG_LOG}" | tail -5 || true
 
+      # Shader hatalari yalnizca gercek cizimde gorunur. Bu yuzden projeyi
+      # gorunmez (headless) bir pencerede GL Compatibility ile calistirip
+      # bir kare cizdiriyoruz; shader/derleme hatalari burada yakalanir.
+      - name: Shader/render testi (GL Compatibility)
+        run: |
+          {
+            echo "===== [RENDER] ====="
+          } >> "${DIAG_LOG}"
+          set +e
+          timeout 240 godot --headless --rendering-driver opengl3 --quit-after 180 --path . >> "${DIAG_LOG}" 2>&1
+          CODE=$?
+          set -e
+          echo "RENDER_EXIT=${CODE}"
+          CLEAN=$(grep -vE "fontconfig|get_system_font_path|Unrecognized output string|Horipad|Nintendo Switch|SDL: Init OK|Orphan StringName|StringName: |XR: " "${DIAG_LOG}" | sed -n '/\[RENDER\]/,$p')
+          echo "${CLEAN}" | tail -40
+          if echo "${CLEAN}" | grep -qE "SHADER ERROR|Shader compilation failed|SCRIPT ERROR|Parse Error"; then
+            echo "::error::Shader/script hatasi var"
+            exit 1
+          fi
+          echo "SONUC: render testi hatasiz."
+
       - name: Debug APK export et
         run: |
           mkdir -p build/android

@@ -15,6 +15,7 @@ extends StaticBody3D
 @export var hill_amplitude: float = 9.0
 @export var detail_amplitude: float = 3.0
 @export var noise_seed: int = 20261108
+@export var toon_material: Material = null
 
 # Su shader'inin kullanacagi olcek (doku 0..1 arasina sikistirilir).
 const HEIGHT_MIN: float = -30.0
@@ -159,12 +160,14 @@ func _build_mesh() -> Dictionary:
 	var mesh := ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 
-	var mat := StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo = true
-	mat.roughness = 0.95
-	mat.metallic_specular = 0.15
-	# Cift tarafli: sarma (winding) yonunden bagimsiz gorunur.
-	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	# Toon (boyalı) malzeme; yoksa duz standart malzemeye dus.
+	var mat: Material = toon_material
+	if mat == null:
+		var std := StandardMaterial3D.new()
+		std.vertex_color_use_as_albedo = true
+		std.roughness = 0.95
+		std.cull_mode = BaseMaterial3D.CULL_DISABLED
+		mat = std
 	mesh.surface_set_material(0, mat)
 
 	_mesh_instance = MeshInstance3D.new()
