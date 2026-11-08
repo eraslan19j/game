@@ -5,7 +5,7 @@ shader_type spatial;
 render_mode shadows_disabled, fog_disabled;
 
 uniform vec4 shallow_color : source_color = vec4(0.05, 0.22, 0.36, 1.0);
-uniform vec4 deep_color : source_color = vec4(0.05, 0.20, 0.34, 1.0);
+uniform vec4 deep_color : source_color = vec4(0.10, 0.34, 0.56, 1.0);
 uniform vec4 foam_color : source_color = vec4(0.92, 0.99, 0.99, 1.0);
 uniform vec4 shore_color : source_color = vec4(0.72, 0.93, 0.90, 1.0);
 uniform float wave_speed = 1.0;
@@ -26,9 +26,20 @@ float wave_height(vec2 p, float t) {
 }
 
 void vertex() {
-	// Su yuzeyi TAM DUZ. Dalga denemesi adanin cevresinde parlak bir halka
-	// olusturdu; stilize bir cizgi film denizi icin duz yuzey hem daha temiz
-	// hem de cok daha ucuz.
+	float t = TIME * wave_speed;
+	// Dalga yuksekligi kiyida soner; normal her zaman dalgadan gelir.
+	float world_r = length((MODEL_MATRIX * vec4(VERTEX, 1.0)).xz);
+	float damp = smoothstep(78.0, 150.0, world_r);
+
+	float h0 = wave_height(VERTEX.xz, t);
+	VERTEX.y += h0 * damp;
+
+	float e = 0.9;
+	float hx = wave_height(VERTEX.xz + vec2(e, 0.0), t);
+	float hz = wave_height(VERTEX.xz + vec2(0.0, e), t);
+	vec3 n = normalize(vec3(-(hx - h0) / e, 1.0, -(hz - h0) / e));
+	NORMAL = normalize(mix(NORMAL, n, 0.75));
+
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
@@ -42,8 +53,10 @@ void fragment() {
 	vec3 col = deep_color.rgb;
 
 	// Kiyi hattinda ince kopuk cizgisi.
-	float foam = 1.0 - smoothstep(70.0, 76.0, island_dist);
-	col = mix(col, foam_color.rgb, foam * 0.35);
+	// Kopuk cok ince ve hafif: genis/parlak oldugunda ada cevresinde
+	// "isik halkasi" gibi duruyordu.
+	float foam = 1.0 - smoothstep(68.0, 72.0, island_dist);
+	col = mix(col, foam_color.rgb, foam * 0.16);
 
 	ALBEDO = col;
 	// Su tamamen mat: gunesin su uzerindeki parlak yansimasi (adanin
