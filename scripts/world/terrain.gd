@@ -213,16 +213,21 @@ func _build_height_texture(heights: PackedFloat32Array, n: int) -> void:
 
 ## Cizgi film havasi icin yukseklik/egime gore sabit renkler.
 func _color_for(h: float, normal_y: float) -> Color:
-	var deep_sand := Color(0.34, 0.33, 0.27)
+	# Su altindaki zemin de SU RENGINE boyanir: yari saydam suyun altindan
+	# parlak kum gorunup "gri kare" gibi durmasini engeller.
+	var seabed := Color(0.07, 0.28, 0.40)
+	var seabed_shallow := Color(0.22, 0.55, 0.60)
 	var sand := Color(0.87, 0.78, 0.55)
 	var grass_low := Color(0.31, 0.58, 0.24)
 	var grass_high := Color(0.52, 0.72, 0.29)
 	var rock := Color(0.63, 0.58, 0.53)
 
-	if h < sea_level - 1.5:
-		return deep_sand
+	if h < sea_level - 3.0:
+		return seabed
+	if h < sea_level - 0.2:
+		return seabed.lerp(seabed_shallow, clampf((h - (sea_level - 3.0)) / 2.8, 0.0, 1.0))
 	if h < sea_level + 1.0:
-		return sand.lerp(deep_sand, 0.25)
+		return seabed_shallow.lerp(sand, clampf((h - (sea_level - 0.2)) / 1.2, 0.0, 1.0))
 	# Dik kiyi yamaci: kum -> kaya karisimi (gri kitle olusmasin).
 	if normal_y < 0.80:
 		return sand.lerp(rock, 0.55)
