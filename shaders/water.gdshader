@@ -78,3 +78,20 @@ void fragment() {
 void light() {
 	DIFFUSE_LIGHT += LIGHT_COLOR * ATTENUATION * 0.62 / PI;
 }
+
+// GECICI TANI: uc varyant tek karede
+void light() {
+	DIFFUSE_LIGHT += LIGHT_COLOR * ATTENUATION * 0.62 / PI;
+	bool a = SCREEN_UV.x < 0.34;
+	bool b = SCREEN_UV.x >= 0.34 && SCREEN_UV.x < 0.67;
+	// 1) derinlik yaz + duz albedo (opak, standart)
+	// 2) normali yukari sabitle
+	// 3) sabit albedo, isiklandirmasiz gibi
+	if (a) {
+		DIFFUSE_LIGHT = vec3(0.0);
+		ALBEDO = vec3(0.05, 0.20, 0.34);
+	} else if (b) {
+		NORMAL = vec3(0.0, 1.0, 0.0);
+		ALBEDO = vec3(0.05, 0.20, 0.34);
+	}
+}
