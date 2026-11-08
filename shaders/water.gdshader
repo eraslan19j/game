@@ -59,9 +59,10 @@ void fragment() {
 	METALLIC = 0.0;
 	SPECULAR = 0.04;
 
-	// Su HER YERDE opak. Boylece arazinin 200x200 m kare tabani suyun
-	// altindan gorunmez (goruntuyu bozan tek sey buydu). Ada suyun ustunde
-	// kaldigi icin kiyi hattinda dogal bir bulusma olur; kiyi rengi ve kopuk
-	// halkasi yukarida island_dist'e gore zaten uygulaniyor.
-	ALPHA = 1.0;
+	// ONEMLI: ALPHA'ya HIC deger yazmiyoruz. Godot'ta ALPHA yazmak materyali
+	// saydam hatta alir; saydam materyal DERINLIK YAZMAZ ve arazinin 200x200 m
+	// kare tabani suyun ustune cizilip "kare" olarak gorunur. ALPHA yazmayinca
+	// su opak olur, derinligi yazar ve kare tamamen kaybolur.
+	//
+	// Kiyi hissi renkle veriliyor: shore + foam halkasi (yukarida).
 }

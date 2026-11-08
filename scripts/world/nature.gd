@@ -284,12 +284,12 @@ func _build_sand() -> void:
 		if items.size() >= sand_patch_count:
 			break
 		# Deniz seviyesine yakin, hafif egimli kiyi seridi.
-		var spot = _pick(-0.4, 2.2, 0.45, 0.99)
+		var spot = _pick(-0.2, 1.4, 0.40, 0.99)
 		if spot == null:
 			continue
 		items.append({
 			"pos": spot + Vector3(0.0, 0.03, 0.0),
-			"scale": _rng.randf_range(4.0, 11.0),
+			"scale": _rng.randf_range(2.0, 5.5),
 			"rot": _rng.randf_range(0.0, TAU),
 			"color": SAND_COLOR.lerp(Color(1, 1, 1), _rng.randf_range(0.0, 0.25)),
 		})
