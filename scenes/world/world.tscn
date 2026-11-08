@@ -102,6 +102,7 @@ toon_material = SubResource("ShaderMaterial_toon_ground")
 [node name="Water" type="MeshInstance3D" parent="."]
 material_override = SubResource("ShaderMaterial_water")
 script = ExtResource("3_water")
+visible = false
 
 [node name="CameraRig" type="Node3D" parent="."]
 
