@@ -169,6 +169,12 @@ func _build_mesh() -> Dictionary:
 			norms[idx] = nrm
 			cols[idx] = _color_for(h, nrm.y)
 
+	# ONEMLI: deniz seviyesinin ALTINDA kalan (deniz tabani) kareler HIC
+	# uretilmez. Arazi 200x200 m'lik bir kare oldugu icin, taban uretildiginde
+	# su yuzeyiyle derinlik catismasi yasaniyor ve goruntude belirgin bir KARE
+	# olusuyordu. Sadece adanin kendisi cizilince boyle bir yuzey kalmiyor;
+	# su zaten her yeri kapliyor. Kiyi hatti da daha dogal gorunuyor.
+	const SEA_CULL: float = -0.45
 	var indices := PackedInt32Array()
 	indices.resize(grid_cells * grid_cells * 6)
 	var k: int = 0
@@ -178,6 +184,10 @@ func _build_mesh() -> Dictionary:
 			var i1: int = i0 + 1
 			var i2: int = i0 + n
 			var i3: int = i2 + 1
+			# Dordu de denizin altindaysa bu kareyi atla.
+			if heights[i0] < SEA_CULL and heights[i1] < SEA_CULL \
+					and heights[i2] < SEA_CULL and heights[i3] < SEA_CULL:
+				continue
 			# Saat yonunun tersi (yukari bakan yuz): ConcavePolygonShape3D
 			# tek tarafli oldugu icin yon onemli — yanlissa isin/carpisma gecmez.
 			indices[k] = i0
@@ -188,6 +198,7 @@ func _build_mesh() -> Dictionary:
 			indices[k + 1] = i3
 			indices[k + 2] = i2
 			k += 3
+		indices.resize(k)
 
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
