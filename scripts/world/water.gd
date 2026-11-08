@@ -33,6 +33,9 @@ func setup(terrain_height_texture: Texture2D, terrain_size: float, h_min: float,
 		return
 	if terrain_height_texture != null:
 		_material.set_shader_parameter("terrain_height", terrain_height_texture)
+	print("[Water] doku=%s arazi=%.1f m  dalga=%.2f  yuzey=%.0f m  bolum=%d"
+		% ["var" if terrain_height_texture != null else "YOK", terrain_size,
+		wave_strength, size, subdivisions])
 	_material.set_shader_parameter("terrain_size", terrain_size)
 	_material.set_shader_parameter("height_min", h_min)
 	_material.set_shader_parameter("height_max", h_max)

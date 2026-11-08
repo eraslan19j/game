@@ -35,6 +35,22 @@ func _ready() -> void:
 	var built := _build_mesh()
 	_add_collision(built["mesh"])
 	_build_height_texture(built["heights"], built["n"])
+	_report_stats(built["heights"])
+
+
+## Tanilama: arazi istatistiklerini loga yazar (ada gercekten ada mi?).
+func _report_stats(heights: PackedFloat32Array) -> void:
+	var h_min := 1.0e9
+	var h_max := -1.0e9
+	var above := 0
+	for h in heights:
+		h_min = minf(h_min, h)
+		h_max = maxf(h_max, h)
+		if h > sea_level:
+			above += 1
+	var land_pct := 100.0 * float(above) / float(heights.size())
+	print("[Terrain] grid=%dx%d nokta=%d  yukseklik=[%.1f .. %.1f] m  kara=%%%.1f  cevre=%.1f m"
+		% [grid_cells, grid_cells, heights.size(), h_min, h_max, land_pct, world_size])
 
 
 func _setup_noise() -> void:

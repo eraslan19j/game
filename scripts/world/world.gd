@@ -32,6 +32,9 @@ func _ready() -> void:
 		Vector3(0.0, camera_height, camera_distance)
 	)
 
+	# Fizik dunyasi bir kare sonra hazir olur; carpisma testini ondan sonra yap.
+	_verify_collision.call_deferred()
+
 	# Su, kiyi derinligini arazi dokusundan okur.
 	_water.setup(
 		_terrain.height_texture,
@@ -39,6 +42,25 @@ func _ready() -> void:
 		_terrain.height_min,
 		_terrain.height_max
 	)
+
+
+## Tanilama: arazi carpismasi gercekten calisiyor mu?
+## Deniz seviyesinin ustunde oldugunu bildigimiz noktalara isin gonderir.
+func _verify_collision() -> void:
+	var space := get_world_3d().direct_space_state
+	var tested := 0
+	var hits := 0
+	for p in [Vector2(0, 0), Vector2(20, 15), Vector2(-25, 30), Vector2(35, -20)]:
+		var from := Vector3(p.x, 200.0, p.y)
+		var query := PhysicsRayQueryParameters3D.create(from, from + Vector3(0, -300, 0))
+		var hit := space.intersect_ray(query)
+		tested += 1
+		if not hit.is_empty():
+			hits += 1
+			print("[Collision] (%.0f, %.0f) -> carpisma y=%.2f" % [p.x, p.y, hit["position"].y])
+		else:
+			print("[Collision] (%.0f, %.0f) -> CARPISMA YOK" % [p.x, p.y])
+	print("[Collision] sonuc: %d/%d nokta carpisti" % [hits, tested])
 
 
 func _process(delta: float) -> void:
