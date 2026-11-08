@@ -62,6 +62,7 @@ void fragment() {
 	// Kiyida daha saydam, acik denizde neredeyse opak.
 	// Sadece adanin uzerinde saydam (arazi gorunur). Ada disinda TAM opak:
 	// boylece arazinin 200x200 m kare tabani suyun altindan gorunmez.
-	float alpha = smoothstep(70.0, 86.0, island_dist);
+	float alpha = smoothstep(78.0, 92.0, island_dist);
+	alpha = max(alpha, step(92.0, island_dist));
 	ALPHA = clamp(alpha, 0.0, 1.0);
 }
