@@ -1,0 +1,64 @@
+name: Android Debug APK
+
+# Ne zaman calissin: main'e her push'ta + istersen elle "Run workflow" ile.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Debug APK derle
+    runs-on: ubuntu-24.04
+    container:
+      image: barichello/godot-ci:4.5.2
+
+    env:
+      GODOT_VERSION: "4.5.2"
+      EXPORT_PRESET: "Android Debug"
+      APK_NAME: "kucuk-dunya-debug.apk"
+
+    steps:
+      - name: Depoyu indir
+        uses: actions/checkout@v4
+
+      # Imaj, export template'lerini /root altinda tutuyor. Runner kullanicisi
+      # root olmadigi icin bunlari kendi ev dizinine tasiyoruz.
+      - name: Godot export template'lerini hazirla
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates
+          mkdir -v -p ~/.config
+          if [ -d /root/.config/godot ] && [ ! -d ~/.config/godot ]; then
+            cp -a /root/.config/godot ~/.config/godot
+          fi
+          SRC="/root/.local/share/godot/export_templates/${GODOT_VERSION}.stable"
+          if [ -d "$SRC" ]; then
+            cp -a "$SRC" ~/.local/share/godot/export_templates/
+          fi
+          echo "--- yuklenen export template'leri ---"
+          ls -1 ~/.local/share/godot/export_templates/ || true
+
+      # Ilk acilista Godot import eder (.godot klasoru olusur). Bu adim olmadan
+      # export bazen bos/kirik pck uretir, o yuzden acikca yapiyoruz.
+      - name: Projeyi ice aktar
+        run: |
+          godot --headless --editor --quit --path . || godot --headless --import --path .
+
+      - name: Debug APK export et
+        run: |
+          mkdir -v -p build/android
+          godot --headless --verbose --export-debug "$EXPORT_PRESET" "$(readlink -f build/android)/$APK_NAME" --path .
+
+      - name: APK gercekten olustu mu kontrol et
+        run: |
+          ls -lh build/android/
+          test -s "build/android/$APK_NAME" || { echo "HATA: APK olusmadi"; exit 1; }
+
+      - name: APK'yi artifact olarak yukle
+        uses: actions/upload-artifact@v4
+        with:
+          name: kucuk-dunya-debug-apk
+          path: build/android/${{ env.APK_NAME }}
+          if-no-files-found: error
+          retention-days: 30

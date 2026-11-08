@@ -1,0 +1,15 @@
+# Godot 4 dosyalari
+.godot/
+*.translation
+
+# Build ciktilari
+build/
+export/
+*.pck
+*.apk
+*.aab
+
+# Isletim sistemi / editor
+.DS_Store
+Thumbs.db
+*.tmp
