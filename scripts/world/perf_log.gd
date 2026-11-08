@@ -30,3 +30,24 @@ func _process(delta: float) -> void:
 	print("[Perf] kalite=%s  golge=%s  fps_hedefi=30+" % [
 		QualitySettings.level_name(),
 		"acik" if QualitySettings.preset()["shadow_enabled"] else "kapali"])
+	_maybe_screenshot()
+
+
+## Sadece CI'da (CAPTURE_SCREENSHOT=1) ekran goruntusu alir.
+## Boylece yapilan isin gercekten dogru gorundugu kontrol edilebilir.
+func _maybe_screenshot() -> void:
+	if OS.get_environment("CAPTURE_SCREENSHOT") == "":
+		return
+	await RenderingServer.frame_post_draw
+	var vp := get_viewport()
+	if vp == null:
+		return
+	var img := vp.get_texture().get_image()
+	if img == null:
+		print("[Shot] ekran goruntusu alinamadi")
+		return
+	var path := OS.get_environment("CAPTURE_PATH")
+	if path == "":
+		path = "res://ci_screenshot.png"
+	var err := img.save_png(path)
+	print("[Shot] %s -> %s (%dx%d)" % [path, "OK" if err == OK else str(err), img.get_width(), img.get_height()])

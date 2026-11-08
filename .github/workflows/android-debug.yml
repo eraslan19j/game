@@ -119,6 +119,7 @@ jobs:
             echo "===== [RENDER] ====="
           } >> "${DIAG_LOG}"
           set +e
+          CAPTURE_SCREENSHOT=1 CAPTURE_PATH="/tmp/ci_screenshot.png" \
           xvfb-run -a -s "-screen 0 1280x720x24" \
             timeout 300 godot --rendering-driver opengl3 --resolution 1280x720 \
             --quit-after 200 --path . >> "${DIAG_LOG}" 2>&1
@@ -151,6 +152,15 @@ jobs:
             exit 1
           fi
           echo "SONUC: sahne gercekten cizildi (${DRAWS} cizim cagrisi)."
+
+          # Ekran goruntusu gercekten olustu mu?
+          if [ -f /tmp/ci_screenshot.png ]; then
+            ls -lh /tmp/ci_screenshot.png
+            echo "SHOT_OK"
+          else
+            echo "::error::Ekran goruntusu olusmadi"
+            exit 1
+          fi
 
       - name: Debug APK export et
         run: |
@@ -206,6 +216,15 @@ jobs:
       # Not: imajda "gh" CLI yok, bu yuzden softprops/action-gh-release kullaniliyor.
       # overwrite_files: true -> varsa eski APK'nin uzerine yazar (silme gerekmez).
       # -----------------------------------------------------------------
+      - name: Ekran goruntusunu artifact olarak yukle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ekran-goruntusu
+          path: /tmp/ci_screenshot.png
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: latest Release guncelle
         uses: softprops/action-gh-release@v2
         with:
@@ -291,8 +310,12 @@ jobs:
           git config user.name "ci-diagnostics"
           git config user.email "ci@localhost"
           cp /tmp/export_clean.log ./export.log
+          if [ -f /tmp/ci_screenshot.png ]; then
+            cp /tmp/ci_screenshot.png ./ci_screenshot.png
+          fi
           git checkout -q -b ci-logs
           git add export.log
+          git add ci_screenshot.png 2>/dev/null || true
           git commit -q -m "CI tanilama logu: $(date -u +%Y-%m-%dT%H:%M:%SZ)" || true
           git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ci-logs
         env:
