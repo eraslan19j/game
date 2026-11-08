@@ -90,7 +90,6 @@ directional_shadow_mode = 1
 script = ExtResource("7_sky")
 
 [node name="Clouds" type="MeshInstance3D" parent="." groups=["quality_clouds"]]
-visible = false
 transform = Transform3D(700, 0, 0, 0, 700, 0, 0, 0, 700, 0, 0, 0)
 mesh = SubResource("SphereMesh_clouds")
 material_override = SubResource("ShaderMaterial_clouds")
