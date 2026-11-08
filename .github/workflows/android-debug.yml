@@ -119,37 +119,48 @@ jobs:
       # "latest" Release'ini olustur/guncelle ve APK'yi oraya koy.
       # Sabit link: /releases/latest/download/kucuk-dunya-debug.apk
       # ---------------------------------------------------------------
+      # -----------------------------------------------------------------
+      # "latest" etiketli Release'i olustur/guncelle ve APK'yi oraya koy.
+      # Sabit link: /releases/latest/download/kucuk-dunya-debug.apk
+      # Not: imajda "gh" CLI yok, bu yuzden softprops/action-gh-release kullaniliyor.
+      # overwrite_files: true -> varsa eski APK'nin uzerine yazar (silme gerekmez).
+      # -----------------------------------------------------------------
       - name: latest Release guncelle
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: "En son surum (latest)"
+          body: |
+            Her `main` push'unda otomatik derlenip buraya yuklenir.
+
+            **Sabit indirme linki:**
+            https://github.com/eraslan19j/game/releases/latest/download/kucuk-dunya-debug.apk
+
+            APK: debug, arm64-v8a, yalnizca test icin.
+          files: build/android/${{ env.APK_NAME }}
+          overwrite_files: true
+          fail_on_unmatched_files: true
+          draft: false
+          prerelease: false
+
+      # Release'in gercekten yayinda oldugunu ve APK'nin indirilebilir
+      # oldugunu dogrula (private depoda bu adim uyarir).
+      - name: Release yayinda mi dogrula
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          APK_FILE: build/android/kucuk-dunya-debug.apk
         run: |
           set -euo pipefail
-          TAG="latest"
-          echo "Depo gorunurlugu:"
-          gh api "repos/${GH_REPO}" -q '.visibility' || true
-
-          # latest etiketli release var mi?
-          if gh release view "${TAG}" >/dev/null 2>&1; then
-            echo "Mevcut ${TAG} release'i bulundu, once eski APK siliniyor."
-            gh release delete-asset "${TAG}" "${APK_NAME}" -y || echo "Silinecek eski APK yok."
-            gh release edit "${TAG}" --title "En son surum (latest)" --notes "Her main push'unda otomatik guncellenir. APK: ${APK_NAME}"
-          else
-            echo "Yeni ${TAG} release'i olusturuluyor."
-            gh release create "${TAG}" \
-              --title "En son surum (latest)" \
-              --notes "Her main push'unda otomatik guncellenir. APK: ${APK_NAME}" \
-              --prerelease=false
-          fi
-
-          # Yeni APK'yi yukle
-          gh release upload "${TAG}" "${APK_FILE}" --clobber
-
-          echo "===== Release icerigi ====="
-          gh release view "${TAG}" --json tagName,isDraft,isPrerelease,assets \
-            -q '"tag=\(.tagName) draft=\(.isDraft) prerelease=\(.isPrerelease) assets=\(.assets[].name)"'
-          echo "Sabit link: https://github.com/${GH_REPO}/releases/latest/download/${APK_NAME}"
+          echo "===== [VERIFY] repo gorunurlugu ====="
+          curl -s -H "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}" \
+            | grep -o '"visibility": *"[a-z]*"' || true
+          echo "===== [VERIFY] latest release ====="
+          curl -s -H "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/latest" \
+            | grep -oE '"tag_name": *"[^"]*"|"draft": *(true|false)|"prerelease": *(true|false)|"name": *"kucuk-dunya-debug.apk"|"size": *[0-9]+' || true
+          echo "===== [VERIFY] sabit link (HTTP durum kodu) ====="
+          curl -s -o /dev/null -w "HTTP %{http_code} -> %{url_effective}\n" -L \
+            "https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/kucuk-dunya-debug.apk" || true
 
       # Log indirme servisi bazi ortamlardan erisilemedigi icin, derleme
       # basarisiz olursa tanilama logunu bir dala yaziyoruz.
