@@ -32,8 +32,8 @@ jobs:
       - name: Godot export template'lerini hazirla
         run: |
           set -x
-          mkdir -v -p ~/.local/share/godot/export_templates
-          mkdir -v -p ~/.config
+          mkdir -p ~/.local/share/godot/export_templates
+          mkdir -p ~/.config
           if [ -d /root/.config/godot ] && [ ! -d ~/.config/godot ]; then
             cp -a /root/.config/godot ~/.config/godot
           fi
@@ -42,38 +42,55 @@ jobs:
             cp -a "$SRC" ~/.local/share/godot/export_templates/
           fi
           {
-            echo "### godot --version"
-            godot --version
-            echo "### export templates"
-            ls -1 ~/.local/share/godot/export_templates/ || true
-            ls -1 ~/.local/share/godot/export_templates/*/ | head -40 || true
-            echo "### editor settings"
-            ls -1 ~/.config/godot/ || true
-            cat ~/.config/godot/editor_settings-*.tres 2>/dev/null || true
-            echo "### android sdk"
+            echo "===== [SETUP] godot --version ====="
+            godot --version 2>&1 | tail -1
+            echo "===== [SETUP] export templates ====="
+            ls -1 ~/.local/share/godot/export_templates/*/ 2>/dev/null | head -40
+            echo "===== [SETUP] editor settings ====="
+            cat ~/.config/godot/editor_settings-*.tres 2>/dev/null
+            echo "===== [SETUP] android sdk ====="
             echo "ANDROID_HOME=${ANDROID_HOME:-yok}"
-            ls -1 "${ANDROID_HOME:-/usr/lib/android-sdk}" 2>/dev/null || true
-            echo "### java"
-            java -version 2>&1 || true
-          } > "${DIAG_LOG}" 2>&1
-          cat "${DIAG_LOG}"
+            ls -1 "${ANDROID_HOME:-/usr/lib/android-sdk}" 2>/dev/null
+            ls -1 "${ANDROID_HOME:-/usr/lib/android-sdk}"/build-tools 2>/dev/null
+            java -version 2>&1
+          } >> "${DIAG_LOG}" 2>&1
+          grep -v fontconfig "${DIAG_LOG}" | tail -40
 
       # Ilk acilista Godot import eder (.godot klasoru olusur). Bu adim olmadan
       # export bazen bos/kirik pck uretir, o yuzden acikca yapiyoruz.
       - name: Projeyi ice aktar
         run: |
-          godot --headless --editor --quit --path . 2>&1 | tee -a "${DIAG_LOG}" || godot --headless --import --path . 2>&1 | tee -a "${DIAG_LOG}"
+          {
+            echo "===== [IMPORT] ====="
+            godot --headless --editor --quit --path . 2>&1
+          } >> "${DIAG_LOG}" 2>&1
+          grep -vE "fontconfig|get_system_font_path" "${DIAG_LOG}" | tail -15
 
       - name: Debug APK export et
+        id: export
         run: |
-          set -o pipefail
-          mkdir -v -p build/android
-          godot --headless --verbose --export-debug "$EXPORT_PRESET" "$(readlink -f build/android)/$APK_NAME" --path . 2>&1 | tee -a "${DIAG_LOG}"
+          mkdir -p build/android
+          APK_PATH="$(readlink -f build/android)/${APK_NAME}"
+          echo "APK hedefi: ${APK_PATH}"
+          {
+            echo "===== [EXPORT] ${EXPORT_PRESET} -> ${APK_PATH} ====="
+          } >> "${DIAG_LOG}"
+          set +e
+          godot --headless --verbose --export-debug "${EXPORT_PRESET}" "${APK_PATH}" --path . >> "${DIAG_LOG}" 2>&1
+          CODE=$?
+          set -e
+          echo "GODOT_EXIT=${CODE}"
+          echo "===== [EXPORT] cikti (son 80 satir) ====="
+          grep -vE "fontconfig|get_system_font_path" "${DIAG_LOG}" | tail -80
+          if [ "${CODE}" -ne 0 ]; then
+            echo "::error::Godot export ${CODE} koduyla basarisiz oldu"
+            exit "${CODE}"
+          fi
 
       - name: APK gercekten olustu mu kontrol et
         run: |
-          ls -lh build/android/ | tee -a "${DIAG_LOG}"
-          test -s "build/android/$APK_NAME" || { echo "HATA: APK olusmadi" | tee -a "${DIAG_LOG}"; exit 1; }
+          ls -lh build/android/
+          test -s "build/android/$APK_NAME" || { echo "::error::APK olusmadi"; exit 1; }
 
       - name: APK'yi artifact olarak yukle
         uses: actions/upload-artifact@v4
@@ -83,17 +100,19 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      # Log indirme servisi bazi ortamlardan erisilemedigi icin, derleme
-      # basarisiz olursa tanilama logunu bir dala yaziyoruz.
-      - name: Hata tanilama logunu yaz (sadece basarisizlikta)
-        if: failure()
+      # Log indirme servisi bazi ortamlardan erisilemedigi icin, tanilama
+      # logunu her durumda bir dala yaziyoruz.
+      - name: Tanilama logunu yaz
+        if: always()
         run: |
           set -x
+          grep -vE "fontconfig|get_system_font_path" "${DIAG_LOG}" > /tmp/export_clean.log || true
           mkdir -p /tmp/logrepo && cd /tmp/logrepo
           git init -q
           git config user.name "ci-diagnostics"
           git config user.email "ci@localhost"
-          cp "${DIAG_LOG}" ./export.log
+          cp /tmp/export_clean.log ./export.log
+          ls -la build 2>/dev/null || true
           git checkout -q -b ci-logs
           git add export.log
           git commit -q -m "CI tanilama logu: $(date -u +%Y-%m-%dT%H:%M:%SZ)" || true
