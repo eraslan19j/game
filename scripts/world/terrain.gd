@@ -156,8 +156,8 @@ func _build_mesh() -> Dictionary:
 			var h: float = heights[idx]
 			# Denizin altindaki kisimlar su seviyesinin biraz altinda tutulur:
 			# kiyi hattinda testere disi olusmaz, ada da havada durmaz.
-			if h < -0.9:
-				h = -0.9
+			if h < -100.0:
+				h = -100.0  # gecici: kisitlama kapali (deneme)
 			verts[idx] = Vector3(x, h, z)
 
 			# Komsulardan egim -> normal (kenarlarda tek tarafli fark).
@@ -178,7 +178,7 @@ func _build_mesh() -> Dictionary:
 	# su yuzeyiyle derinlik catismasi yasaniyor ve goruntude belirgin bir KARE
 	# olusuyordu. Sadece adanin kendisi cizilince boyle bir yuzey kalmiyor;
 	# su zaten her yeri kapliyor. Kiyi hatti da daha dogal gorunuyor.
-	const SEA_CULL: float = -2.6
+	const SEA_CULL: float = -100.0  # gecici: kesim kapali (deneme)
 	# Once hangi karelerin uretilecegine karar ver. Sonra kesim sinirindaki
 	# (deniz alti komsusu olan) kose noktalarini su seviyesine indir: boylece
 	# kiyi hatti duzgun bir cizgi olur, testere disi kalmaz.
