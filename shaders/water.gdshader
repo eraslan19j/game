@@ -26,23 +26,9 @@ float wave_height(vec2 p, float t) {
 }
 
 void vertex() {
-	float t = TIME * wave_speed;
-	// Dalga YUKSEKLIGI kiyida soner: ada ile suyun bulusma hatti duzgun olur.
-	// Ancak NORMAL her zaman dalgadan hesaplanir. Aksi halde (normali de
-	// sonumlersek) ada cevresindeki su duzlesir, fazla isik alir ve
-	// goruntude PARLAK BIR HALKA olusur. Bu halkayi tam olarak bu yapiyordu.
-	float world_r = length((MODEL_MATRIX * vec4(VERTEX, 1.0)).xz);
-	float damp = smoothstep(78.0, 150.0, world_r);
-
-	float h0 = wave_height(VERTEX.xz, t);
-	VERTEX.y += h0 * damp;
-
-	float e = 0.9;
-	float hx = wave_height(VERTEX.xz + vec2(e, 0.0), t);
-	float hz = wave_height(VERTEX.xz + vec2(0.0, e), t);
-	vec3 n = normalize(vec3(-(hx - h0) / e, 1.0, -(hz - h0) / e));
-	NORMAL = normalize(mix(NORMAL, n, 0.75));
-
+	// Su yuzeyi TAM DUZ. Dalga denemesi adanin cevresinde parlak bir halka
+	// olusturdu; stilize bir cizgi film denizi icin duz yuzey hem daha temiz
+	// hem de cok daha ucuz.
 	world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
