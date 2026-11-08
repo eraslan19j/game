@@ -7,8 +7,8 @@ extends MeshInstance3D
 ##
 ## Doku ve parametreler `setup()` ile dunya scriptinden verilir.
 
-@export var size: float = 500.0
-@export var subdivisions: int = 80
+@export var size: float = 3000.0
+@export var subdivisions: int = 100
 @export var wave_strength: float = 1.0
 @export var wave_speed: float = 1.0
 

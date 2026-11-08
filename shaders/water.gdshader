@@ -8,11 +8,11 @@ uniform float height_min = -30.0;
 uniform float height_max = 45.0;
 uniform float wave_speed = 1.0;
 uniform float wave_strength = 1.0;
-uniform vec4 shallow_color : source_color = vec4(0.48, 0.83, 0.80, 1.0);
-uniform vec4 deep_color : source_color = vec4(0.10, 0.41, 0.55, 1.0);
+uniform vec4 shallow_color : source_color = vec4(0.36, 0.79, 0.79, 1.0);
+uniform vec4 deep_color : source_color = vec4(0.05, 0.30, 0.47, 1.0);
 uniform vec4 foam_color : source_color = vec4(0.95, 0.99, 0.99, 1.0);
 uniform float alpha_shallow = 0.42;
-uniform float alpha_deep = 0.90;
+uniform float alpha_deep = 0.96;
 
 varying vec3 world_pos;
 
@@ -55,15 +55,15 @@ void fragment() {
 	float deep_mix = smoothstep(0.4, 6.0, depth);
 	vec3 col = mix(shallow_color.rgb, deep_color.rgb, deep_mix);
 
-	// Kiyida beyaz kopuk bandi.
-	float foam = 1.0 - smoothstep(0.0, 0.55, depth);
-	col = mix(col, foam_color.rgb, foam * 0.85);
+	// Kiyida ince beyaz kopuk bandi (genis alanlari kaplamasin).
+	float foam = 1.0 - smoothstep(0.0, 0.22, depth);
+	col = mix(col, foam_color.rgb, foam * 0.7);
 
 	ALBEDO = col;
 	ROUGHNESS = 0.12;
 	METALLIC = 0.0;
 	SPECULAR = 0.45;
-	ALPHA = mix(alpha_shallow, alpha_deep, deep_mix) + foam * 0.25;
+	ALPHA = mix(alpha_shallow, alpha_deep, deep_mix) + foam * 0.15;
 	ALPHA = clamp(ALPHA, 0.0, 1.0);
 
 	// Hafif isilti (gunes parlamasi) icin normali kullaniyoruz; ekstra efekt yok.
