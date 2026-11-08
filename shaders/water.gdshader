@@ -57,9 +57,11 @@ void fragment() {
 	col = mix(col, foam_color.rgb, foam * 0.35);
 
 	ALBEDO = col;
-	ROUGHNESS = 0.55;
+	// Su tamamen mat: gunesin su uzerindeki parlak yansimasi (adanin
+	// cevresinde beyaz halka gibi duruyordu) kapatildi.
+	ROUGHNESS = 1.0;
 	METALLIC = 0.0;
-	SPECULAR = 0.04;
+	SPECULAR = 0.0;
 
 	// ONEMLI: ALPHA'ya HIC deger yazmiyoruz. Godot'ta ALPHA yazmak materyali
 	// saydam hatta alir; saydam materyal DERINLIK YAZMAZ ve arazinin 200x200 m
