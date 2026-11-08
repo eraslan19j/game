@@ -138,13 +138,15 @@ func _build_mesh() -> Dictionary:
 			var i1: int = i0 + 1
 			var i2: int = i0 + n
 			var i3: int = i2 + 1
+			# Saat yonunun tersi (yukari bakan yuz): ConcavePolygonShape3D
+			# tek tarafli oldugu icin yon onemli — yanlissa isin/carpisma gecmez.
 			indices[k] = i0
-			indices[k + 1] = i2
-			indices[k + 2] = i1
+			indices[k + 1] = i1
+			indices[k + 2] = i2
 			k += 3
 			indices[k] = i1
-			indices[k + 1] = i2
-			indices[k + 2] = i3
+			indices[k + 1] = i3
+			indices[k + 2] = i2
 			k += 3
 
 	var arrays := []
