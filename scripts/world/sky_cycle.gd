@@ -10,7 +10,7 @@ extends Node
 @export var day_length: float = 600.0
 @export var start_phase: float = 0.28
 @export var sun_distance: float = 300.0
-@export var day_light_energy: float = 0.25
+@export var day_light_energy: float = 0.55
 @export var night_light_energy: float = 0.10
 
 # (faz, gokyuzu ust, gokyuzu ufuk, gunes rengi, sis rengi, ortam enerjisi, bulut rengi)

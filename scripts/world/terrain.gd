@@ -74,14 +74,15 @@ func _setup_noise() -> void:
 ## Baska scriptler (agac/kaya yerlestirme, ileride karakter) bunu kullanabilir.
 func height_at(x: float, z: float) -> float:
 	var d := Vector2(x, z).length() / maxf(island_radius, 0.001)
-	var falloff := clampf(1.0 - pow(d, 2.2), 0.0, 1.0)
-	falloff = smoothstep(0.0, 1.0, falloff)
+	# ADA KENARI: duz plato + dik kiyi. Onceki yumusak dusus 74 m genis
+	# kayalik bir yamac olusturup suyu ufka itiyordu.
+	var falloff := smoothstep(1.0, 0.80, d)
 
 	var big := _noise_big.get_noise_2d(x, z)
 	var small := _noise_small.get_noise_2d(x, z)
 	var h := falloff * (base_height + big * hill_amplitude + small * detail_amplitude)
 	# Kiyidan sonra hizli derinlesme: sig sahanligi yerine gercek derin su.
-	h += (falloff - 1.0) * 18.0
+	h += (falloff - 1.0) * 9.0
 	return h + sea_level
 
 
@@ -222,7 +223,8 @@ func _color_for(h: float, normal_y: float) -> Color:
 		return deep_sand
 	if h < sea_level + 1.0:
 		return sand.lerp(deep_sand, 0.25)
-	if normal_y < 0.78:
-		return rock.lerp(grass_low, 0.25)
+	# Dik kiyi yamaci: kum -> kaya karisimi (gri kitle olusmasin).
+	if normal_y < 0.80:
+		return sand.lerp(rock, 0.55)
 	var t: float = clampf((h - (sea_level + 1.0)) / 16.0, 0.0, 1.0)
 	return grass_low.lerp(grass_high, t)
