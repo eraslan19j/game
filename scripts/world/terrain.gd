@@ -11,8 +11,8 @@ extends StaticBody3D
 @export var grid_cells: int = 128
 @export var island_radius: float = 78.0
 @export var sea_level: float = 0.0
-@export var base_height: float = 10.0
-@export var hill_amplitude: float = 10.0
+@export var base_height: float = 14.0
+@export var hill_amplitude: float = 9.0
 @export var detail_amplitude: float = 3.0
 @export var noise_seed: int = 20261108
 

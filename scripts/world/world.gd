@@ -47,6 +47,9 @@ func _ready() -> void:
 ## Tanilama: arazi carpismasi gercekten calisiyor mu?
 ## Deniz seviyesinin ustunde oldugunu bildigimiz noktalara isin gonderir.
 func _verify_collision() -> void:
+	# Trimesh carpisma sunucusuna bir sonraki fizik karesinde kaydolur.
+	await get_tree().physics_frame
+	await get_tree().physics_frame
 	var space := get_world_3d().direct_space_state
 	var tested := 0
 	var hits := 0
