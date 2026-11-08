@@ -198,7 +198,7 @@ func _build_mesh() -> Dictionary:
 			indices[k + 1] = i3
 			indices[k + 2] = i2
 			k += 3
-		indices.resize(k)
+	indices.resize(k)
 
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
