@@ -71,14 +71,6 @@ void fragment() {
 	// Kiyi hissi renkle veriliyor: foam halkasi (yukarida).
 }
 
-// Su DUZ (sabit) isik alir: dalga normallerine gore aydinlatma yapilsaydi,
-// kiyiya yakin sakin su duz normal yuzunden fazla parlak, acik denizdeki
-// dalgali su ise koyu gorunuyor ve adanin cevresinde BEYAZ BIR HALKA
-// olusuyordu. Sabit isikta su her yerde ayni tonda kaliyor.
-void light() {
-	DIFFUSE_LIGHT += LIGHT_COLOR * ATTENUATION * 0.62 / PI;
-}
-
 // GECICI TANI: uc varyant tek karede
 void light() {
 	DIFFUSE_LIGHT += LIGHT_COLOR * ATTENUATION * 0.62 / PI;
