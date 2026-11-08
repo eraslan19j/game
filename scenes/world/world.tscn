@@ -96,6 +96,7 @@ material_override = SubResource("ShaderMaterial_clouds")
 cast_shadow = 0
 
 [node name="Terrain" type="StaticBody3D" parent="."]
+visible = false
 script = ExtResource("2_terrain")
 toon_material = SubResource("ShaderMaterial_toon_ground")
 
