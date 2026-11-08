@@ -178,7 +178,7 @@ func _build_mesh() -> Dictionary:
 	# su yuzeyiyle derinlik catismasi yasaniyor ve goruntude belirgin bir KARE
 	# olusuyordu. Sadece adanin kendisi cizilince boyle bir yuzey kalmiyor;
 	# su zaten her yeri kapliyor. Kiyi hatti da daha dogal gorunuyor.
-	const SEA_CULL: float = -4.5
+	const SEA_CULL: float = -1.0
 	# Once hangi karelerin uretilecegine karar ver. Sonra kesim sinirindaki
 	# (deniz alti komsusu olan) kose noktalarini su seviyesine indir: boylece
 	# kiyi hatti duzgun bir cizgi olur, testere disi kalmaz.

@@ -51,8 +51,8 @@ void fragment() {
 	vec3 col = mix(shallow_color.rgb, deep_color.rgb, smoothstep(74.0, 104.0, island_dist));
 
 	// Kiyi hattinda ince kopuk cizgisi.
-	float foam = 1.0 - smoothstep(71.0, 78.0, island_dist);
-	col = mix(col, foam_color.rgb, foam * 0.45);
+	float foam = 1.0 - smoothstep(70.0, 76.0, island_dist);
+	col = mix(col, foam_color.rgb, foam * 0.35);
 
 	ALBEDO = col;
 	ROUGHNESS = 0.55;
