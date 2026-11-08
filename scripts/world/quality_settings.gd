@@ -20,7 +20,7 @@ const PRESETS := {
 	Level.LOW: {
 		"shadow_enabled": false,
 		"shadow_size": 1024,
-		"shadow_distance": 40.0,
+		"shadow_distance": 120.0,
 		"shadow_filter": 0,
 		"render_scale": 0.75,
 		"cloud_coverage": 0.30,
@@ -31,7 +31,7 @@ const PRESETS := {
 	Level.MEDIUM: {
 		"shadow_enabled": true,
 		"shadow_size": 2048,
-		"shadow_distance": 60.0,
+		"shadow_distance": 220.0,
 		"shadow_filter": 1,
 		"render_scale": 0.9,
 		"cloud_coverage": 0.46,
@@ -42,7 +42,7 @@ const PRESETS := {
 	Level.HIGH: {
 		"shadow_enabled": true,
 		"shadow_size": 4096,
-		"shadow_distance": 90.0,
+		"shadow_distance": 300.0,
 		"shadow_filter": 2,
 		"render_scale": 1.0,
 		"cloud_coverage": 0.52,
@@ -116,7 +116,9 @@ func apply() -> void:
 	for node in tree.get_nodes_in_group("quality_fog"):
 		if node is WorldEnvironment and (node as WorldEnvironment).environment != null:
 			var env := (node as WorldEnvironment).environment
-			env.fog_density = 0.004 * float(p["fog_scale"])
+			# Sahne dosyasindaki taban deger (0.00006) ile uyumlu: 0.004 cok fazlaydi,
+			# tum goruntuyu soluk mavi sise boguyordu.
+			env.fog_density = 0.0009 * float(p["fog_scale"])
 
 
 func save_settings() -> void:

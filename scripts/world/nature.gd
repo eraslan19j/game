@@ -28,17 +28,17 @@ const NATURE_SHADER := preload("res://shaders/nature.gdshader")
 
 # --- Agac renk paleti (canli, sicak tonlar) ---
 const TREE_LEAF_COLORS := [
-	Color(0.36, 0.66, 0.28),
-	Color(0.46, 0.74, 0.30),
-	Color(0.28, 0.58, 0.32),
-	Color(0.58, 0.75, 0.32),
-	Color(0.40, 0.70, 0.42),
-	Color(0.66, 0.78, 0.34),
+	Color(0.20, 0.52, 0.17),
+	Color(0.28, 0.60, 0.20),
+	Color(0.15, 0.42, 0.20),
+	Color(0.38, 0.62, 0.20),
+	Color(0.24, 0.55, 0.30),
+	Color(0.45, 0.66, 0.22),
 ]
 const BUSH_COLORS := [
-	Color(0.30, 0.56, 0.26),
-	Color(0.40, 0.64, 0.30),
-	Color(0.24, 0.48, 0.28),
+	Color(0.18, 0.44, 0.17),
+	Color(0.26, 0.52, 0.20),
+	Color(0.14, 0.36, 0.20),
 ]
 const FLOWER_COLORS := [
 	Color(0.98, 0.55, 0.62),  # pembe

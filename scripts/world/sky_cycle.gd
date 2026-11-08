@@ -89,7 +89,8 @@ func _apply(p: float) -> void:
 
 	if _env != null:
 		_env.ambient_light_color = k["hor"].lerp(k["top"], 0.4)
-		_env.ambient_light_energy = k["amb"]
+		# 1.3 enerji + toon isigi = asiri pozlama. Yarisi yeterli.
+		_env.ambient_light_energy = float(k["amb"]) * 0.5
 		if _env.fog_enabled:
 			_env.fog_light_color = k["fog"]
 

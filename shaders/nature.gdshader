@@ -47,10 +47,12 @@ void fragment() {
 }
 
 void light() {
+	// Yumusak sarma + bantli isik: cizgi film havasi korunur ama
+	// renkler soluklasmasin (eski surumde isik+ortam asiri parlama yapiyordu).
 	float ndl = dot(NORMAL, LIGHT);
 	float wrapped = clamp(ndl * 0.5 + 0.5, 0.0, 1.0);
 	float q = floor(wrapped * bands + 0.5) / bands;
-	q = clamp(q, 0.14, 1.0);
-	vec3 tint_light = mix(shade_tint.rgb, vec3(1.0, 1.0, 1.0), smoothstep(0.2, 0.95, q));
-	DIFFUSE_LIGHT += tint_light * LIGHT_COLOR * ATTENUATION * q * 0.82 / PI;
+	q = clamp(q, 0.30, 1.0);
+	vec3 shade = shade_tint.rgb;
+	DIFFUSE_LIGHT += mix(shade, vec3(1.0), smoothstep(0.25, 1.0, q)) * LIGHT_COLOR * ATTENUATION * q / PI;
 }

@@ -83,7 +83,7 @@ environment = SubResource("Environment_main")
 light_color = Color(1, 0.95, 0.88, 1)
 light_energy = 1.05
 shadow_enabled = true
-directional_shadow_max_distance = 60.0
+directional_shadow_max_distance = 220.0
 directional_shadow_filter = 1
 directional_shadow_mode = 1
 
