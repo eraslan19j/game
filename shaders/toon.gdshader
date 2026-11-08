@@ -15,6 +15,12 @@ uniform float island_mask_radius = 0.0;
 uniform float sea_level = 0.0;
 
 void fragment() {
+	// Ada disindaki duz arazi tabanini kirp (kare izi kalmasin).
+	if (island_mask_radius > 0.5) {
+		if (length(VERTEX.xz) > island_mask_radius && VERTEX.y < -1.0) {
+			discard;
+		}
+	}
 	vec3 base = albedo.rgb;
 	if (use_vertex_color) {
 		base *= COLOR.rgb;
