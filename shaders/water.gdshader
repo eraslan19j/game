@@ -2,7 +2,7 @@ shader_type spatial;
 // Stilize su: hafif dalga (vertex), yari saydam, kiyida acik renk + kopuk.
 // Derinlik tamamen GEOMETRIDEN gelir: derin bolgelerde duzlemle kamera
 // arasindaki mesafe artar. Doku okumaya bagimli degil (guvenli).
-render_mode shadows_disabled;
+render_mode shadows_disabled, fog_disabled;
 
 uniform vec4 shallow_color : source_color = vec4(0.30, 0.78, 0.78, 1.0);
 uniform vec4 deep_color : source_color = vec4(0.09, 0.36, 0.52, 1.0);

@@ -46,7 +46,6 @@ static func tree(style: int, seed_value: int) -> ArrayMesh:
 			_ball(st, Vector3(-0.40, 1.52, 0.20), 0.50, 9, 5)
 
 	st.generate_normals()
-	st.generate_tangents()
 	return st.commit()
 
 
@@ -62,7 +61,6 @@ static func bush(seed_value: int) -> ArrayMesh:
 	if rng.randf() > 0.5:
 		_ball(st, Vector3(0.05, 0.44, -0.14), 0.20, 7, 4)
 	st.generate_normals()
-	st.generate_tangents()
 	return st.commit()
 
 
@@ -77,7 +75,6 @@ static func flower(seed_value: int) -> ArrayMesh:
 	_ball(st, Vector3(0.045, 0.27, 0.02), 0.040, 5, 3)
 	_ball(st, Vector3(-0.042, 0.28, -0.015), 0.038, 5, 3)
 	st.generate_normals()
-	st.generate_tangents()
 	return st.commit()
 
 
@@ -106,7 +103,6 @@ static func rock(seed_value: int) -> ArrayMesh:
 				_tri(st, ring[i], ring[i2], prev_ring[i2])
 		prev_ring = ring
 	st.generate_normals()
-	st.generate_tangents()
 	return st.commit()
 
 

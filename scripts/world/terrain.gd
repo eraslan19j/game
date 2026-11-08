@@ -154,6 +154,10 @@ func _build_mesh() -> Dictionary:
 			var x: float = -half + float(ix) * _cell
 			var z: float = -half + float(iz) * _cell
 			var h: float = heights[idx]
+			# Kesilen (deniz alti) bolgeye komsu kenarlar su seviyesine
+			# cekilir; boylece kiyi hattinda testere disi olusmaz.
+			if h < 0.0:
+				h = 0.0
 			verts[idx] = Vector3(x, h, z)
 
 			# Komsulardan egim -> normal (kenarlarda tek tarafli fark).
