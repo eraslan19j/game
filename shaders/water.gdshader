@@ -12,8 +12,8 @@ uniform float wave_speed = 1.0;
 uniform float wave_strength = 1.0;
 uniform float alpha_shallow = 0.55;
 uniform float alpha_deep = 1.0;
-uniform float depth_near = 70.0;
-uniform float depth_far = 185.0;
+uniform float depth_near = 60.0;
+uniform float depth_far = 130.0;
 
 varying vec3 world_pos;
 
