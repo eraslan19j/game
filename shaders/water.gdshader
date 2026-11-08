@@ -2,7 +2,7 @@ shader_type spatial;
 // Stilize su: hafif dalga (vertex), yari saydam, kiyida acik renk + kopuk.
 // Derinlik tamamen GEOMETRIDEN gelir: derin bolgelerde duzlemle kamera
 // arasindaki mesafe artar. Doku okumaya bagimli degil (guvenli).
-render_mode shadows_disabled;
+render_mode unshaded, shadows_disabled, depth_test_disabled, cull_disabled;
 
 uniform vec4 shallow_color : source_color = vec4(0.30, 0.78, 0.78, 1.0);
 uniform vec4 deep_color : source_color = vec4(0.05, 0.31, 0.50, 1.0);
@@ -54,7 +54,7 @@ void fragment() {
 	float foam = (1.0 - smoothstep(76.0, 84.0, island_dist)) * shore;
 	col = mix(col, foam_color.rgb, foam * 0.6);
 
-	ALBEDO = col;
+	ALBEDO = vec3(1.0, 0.0, 1.0);
 	ROUGHNESS = 0.55;
 	METALLIC = 0.0;
 	SPECULAR = 0.04;
