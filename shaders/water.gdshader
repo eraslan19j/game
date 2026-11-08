@@ -48,11 +48,12 @@ void fragment() {
 	float far_mix = smoothstep(depth_near, depth_far, dist);
 	vec3 col = mix(shallow_color.rgb, deep_color.rgb, far_mix);
 
-	// Ada cevresinde ince acik kiyi halkasi.
-	float shore = 1.0 - smoothstep(70.0, 150.0, island_dist);
-	col = mix(col, shallow_color.rgb, shore * 0.85);
-	float foam = 1.0 - smoothstep(70.0, 80.0, island_dist);
-	col = mix(col, foam_color.rgb, foam * 0.75);
+	// Ada cevresinde genis, yumusak kiyi gecisi.
+	float shore = 1.0 - smoothstep(64.0, 118.0, island_dist);
+	col = mix(col, shallow_color.rgb, shore * 0.9);
+	// Kiyi hattinda ince kopuk halkasi.
+	float foam = 1.0 - smoothstep(74.0, 82.0, island_dist);
+	col = mix(col, foam_color.rgb, foam * 0.55);
 
 	ALBEDO = col;
 	ROUGHNESS = 0.55;

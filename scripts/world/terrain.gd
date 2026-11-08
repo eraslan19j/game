@@ -154,10 +154,10 @@ func _build_mesh() -> Dictionary:
 			var x: float = -half + float(ix) * _cell
 			var z: float = -half + float(iz) * _cell
 			var h: float = heights[idx]
-			# Kesilen (deniz alti) bolgeye komsu kenarlar su seviyesine
-			# cekilir; boylece kiyi hattinda testere disi olusmaz.
-			if h < 0.0:
-				h = 0.0
+			# Denizin altindaki kisimlar su seviyesinin biraz altinda tutulur:
+			# kiyi hattinda testere disi olusmaz, ada da havada durmaz.
+			if h < -0.9:
+				h = -0.9
 			verts[idx] = Vector3(x, h, z)
 
 			# Komsulardan egim -> normal (kenarlarda tek tarafli fark).
@@ -178,7 +178,7 @@ func _build_mesh() -> Dictionary:
 	# su yuzeyiyle derinlik catismasi yasaniyor ve goruntude belirgin bir KARE
 	# olusuyordu. Sadece adanin kendisi cizilince boyle bir yuzey kalmiyor;
 	# su zaten her yeri kapliyor. Kiyi hatti da daha dogal gorunuyor.
-	const SEA_CULL: float = -0.45
+	const SEA_CULL: float = -2.6
 	var indices := PackedInt32Array()
 	indices.resize(grid_cells * grid_cells * 6)
 	var k: int = 0
@@ -188,7 +188,10 @@ func _build_mesh() -> Dictionary:
 			var i1: int = i0 + 1
 			var i2: int = i0 + n
 			var i3: int = i2 + 1
-			# Dordu de denizin altindaysa bu kareyi atla.
+			# Denizin altindaki kareler uretilmez. Kiyi hattinda kucuk bir
+			# "etek" birakilir (SEA_CULL): boylece ada havada yuzuyormus gibi
+			# durmaz, su altinda devam ediyormus gibi gorunur. Etek deniz
+			# tabaninin rengine boyali oldugu icin kare izlenimi olusmaz.
 			if heights[i0] < SEA_CULL and heights[i1] < SEA_CULL \
 					and heights[i2] < SEA_CULL and heights[i3] < SEA_CULL:
 				continue
@@ -284,6 +287,6 @@ func _color_for(h: float, normal_y: float) -> Color:
 		return seabed_shallow.lerp(sand, clampf((h - (sea_level - 0.2)) / 1.2, 0.0, 1.0))
 	# Dik kiyi yamaci: kum -> kaya karisimi (gri kitle olusmasin).
 	if normal_y < 0.80:
-		return sand.lerp(rock, 0.55)
+		return sand.lerp(rock, 0.35)
 	var t: float = clampf((h - (sea_level + 1.0)) / 16.0, 0.0, 1.0)
 	return grass_low.lerp(grass_high, t)
