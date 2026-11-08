@@ -13,3 +13,6 @@ export/
 .DS_Store
 Thumbs.db
 *.tmp
+
+# CI ekran goruntusu (gelistirme sirasinda)
+ci_screenshot*.png

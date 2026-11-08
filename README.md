@@ -3,9 +3,19 @@
 Küçük ölçekli, **3D keşif ve fotoğraf çekme** macerası. Savaş yok.
 Sıcak, renkli bir görsel dil hedefliyor. Godot 4 (GDScript) ile geliştiriliyor, Android'e çıkar.
 
-> Durum: **Aşama 2 — Ada.** 200×200 m'lik, noise ile üretilen yumuşak tepeli/vadili küçük bir ada;
-> etrafı stilize su ile çevrili. Zemin çarpışmalı (karakter üzerinde yürüyebilir).
+> Durum: **Aşama 3 — Atmosfer.** Ada + stilize su + toon (boyalı) görünüm,
+> 10 dakikalık gün döngüsü (gün doğumu → öğle → gün batımı → gece), kodla üretilen bulutlar,
+> renkli sis, yumuşak gölgeler ve **Kalite (Düşük/Orta/Yüksek) ayar menüsü** (TR/EN).
 > Kamera otomatik dönüyor. Yürüme ve fotoğraf çekme sonraki adımlarda eklenecek.
+
+## 🎛️ Ayar menüsü
+
+Sol üstteki **AYAR** düğmesine dokun. Menüden:
+- **Kalite:** Düşük / Orta / Yüksek (gölge, bulut yoğunluğu, sis, render ölçeği)
+- **Dil:** Türkçe / English
+- **Bilgi:** o anki FPS ve günün saati
+
+Seçim telefon hafızasında saklanır, uygulama kapanıp açılınca hatırlanır.
 
 ---
 
@@ -22,12 +32,21 @@ game/
 │  └─ world/
 │     └─ world.tscn         ← Açılış sahnesi: ada, su, gökyüzü, güneş, kamera
 ├─ shaders/
-│  └─ water.gdshader        ← Stilize su (dalga, yarı saydamlık, kıyı rengi)
+│  ├─ water.gdshader        ← Stilize su (dalga, saydamlık, kıyı rengi)
+│  ├─ toon.gdshader         ← Boyalı/çizgi film görünümü (bantlı ışık, renkli gölge)
+│  └─ clouds.gdshader       ← Kodla üretilen bulut kubbesi
 ├─ scripts/
 │  └─ world/
 │     ├─ world.gd            ← Sahneyi canlandıran script (güneş, kamera, su bağlantısı)
 │     ├─ terrain.gd          ← Ada arazi üretimi (noise + çarpışma + renkler)
-│     └─ water.gd            ← Su yüzeyi
+│     ├─ water.gd            ← Su yüzeyi
+│     ├─ sky_cycle.gd        ← 10 dakikalık gün döngüsü (renk/sis/güneş)
+│     ├─ quality_settings.gd ← Kalite presetleri (Autoload)
+│     ├─ cloud_texture.gd    ← Bulutlar için kodla üretilen doku
+│     └─ perf_log.gd         ← FPS/çizim istatistiği
+├─ scripts/ui/
+│  ├─ settings_menu.gd       ← Dokunmatik ayar menüsü
+│  └─ i18n.gd                ← TR/EN metin tablosu (Autoload)
 └─ .github/workflows/
    └─ android-debug.yml      ← Her push'ta APK derleyen otomatik hat
 ```
