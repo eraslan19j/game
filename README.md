@@ -104,4 +104,4 @@ Kod yazmayacaksın ama sahneyi görmek istersen:
 - `barichello/godot-ci:4.5.2` imajını kullanır — içinde Godot 4.5.2, JDK 17, Android SDK ve debug keystore hazır gelir.
 - `export_presets.cfg` içindeki **"Android Debug"** preset'i ile `arm64-v8a` debug APK üretir.
 - APK'yı `kucuk-dunya-debug-apk` adıyla artifact olarak yükler (30 gün saklanır).
-- Derleme başarısız olursa tanılama logu `ci-logs` dalına yazılır (`export.log`).
+- Derleme başarısız olursa `ci-logs` dalı oluşturulur ve tanılama logu oraya yazılır (`export.log`). Başarılı derlemede oluşmaz.
