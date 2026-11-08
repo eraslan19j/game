@@ -164,21 +164,36 @@ jobs:
           echo "===== [VERIFY] sabit link ====="
           URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/latest/download/kucuk-dunya-debug.apk"
           echo "URL=${URL}"
+
           # GitHub, yeni yayinlanan release'in "latest" yonlendirmesini birkac
-          # saniye gec hazirlayabiliyor. Bu yuzden yeniden deniyoruz.
+          # saniye gec hazirlayabiliyor; bu yuzden yeniden deniyoruz.
           CODE="000"
           for ATTEMPT in 1 2 3 4 5 6; do
-            CODE=$(curl -sS -o /dev/null -w "%{http_code}" -L "${URL}" || echo "000")
-            echo "deneme ${ATTEMPT}: HTTP ${CODE}"
-            if [ "${CODE}" = "200" ] || [ "${CODE}" = "302" ]; then
+            CODE=$(curl -sS -o /dev/null -w "%{http_code}" "${URL}" || echo "000")
+            echo "deneme ${ATTEMPT}: yonlendirme HTTP ${CODE}"
+            if [ "${CODE}" = "302" ] || [ "${CODE}" = "200" ]; then
               break
             fi
             sleep 10
           done
-          if [ "${CODE}" = "200" ] || [ "${CODE}" = "302" ]; then
-            echo "SONUC: sabit link calisiyor."
+          curl -sS -o /dev/null -D - "${URL}" | grep -iE "^location:" || true
+
+          echo "===== [VERIFY] sabit linkten gercek indirme ====="
+          rm -f /tmp/dl.apk
+          DL_CODE=$(curl -sS -L -o /tmp/dl.apk -w "%{http_code}" "${URL}" || echo "000")
+          DL_SIZE=$(stat -c '%s' /tmp/dl.apk 2>/dev/null || echo 0)
+          echo "HTTP=${DL_CODE} boyut=${DL_SIZE} bayt"
+          if [ "${DL_CODE}" = "200" ]; then
+            echo "===== [VERIFY] indirilen dosya APK mi ====="
+            unzip -l /tmp/dl.apk | grep -E "AndroidManifest.xml|classes.dex" | head -3 || true
+            if [ "${DL_SIZE}" -gt 15000000 ]; then
+              echo "SONUC: sabit link calisiyor, APK gercekten indirildi (${DL_SIZE} bayt)."
+            else
+              echo "::error::Indirilen dosya beklenenden kucuk (${DL_SIZE} bayt)"
+              exit 1
+            fi
           else
-            echo "SONUC: sabit link beklenen yaniti vermedi."
+            echo "::error::Sabit link indirilemedi (HTTP ${DL_CODE})"
             exit 1
           fi
           } 2>&1 | tee -a "${DIAG_LOG}"
